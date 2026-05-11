@@ -1,0 +1,25 @@
+{{#if posts}}
+  <ul class="blog-list">
+    {{#each posts}}
+      <li class="blog-card">
+        {{#if this.image}}
+          <a class="blog-card__image" href="/blog/{{this.slug}}">
+            <img src="{{this.image}}" alt="{{this.imageAlt}}">
+          </a>
+        {{/if}}
+        <div class="blog-card__body">
+          <p class="blog-card__meta">
+            <time datetime="{{this.isoDate}}">{{this.displayDate}}</time>
+            <span class="blog-card__sep">&middot;</span>
+            <span>{{this.author}}</span>
+          </p>
+          <h2 class="blog-card__title"><a href="/blog/{{this.slug}}">{{this.title}}</a></h2>
+          <p class="blog-card__description">{{this.description}}</p>
+          <a class="blog-card__more" href="/blog/{{this.slug}}">Read more &rarr;</a>
+        </div>
+      </li>
+    {{/each}}
+  </ul>
+{{else}}
+  <p class="blog-empty">No posts yet. Add one to <code>content/blog/</code>.</p>
+{{/if}}

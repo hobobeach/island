@@ -1,0 +1,33 @@
+<link rel="stylesheet" href="/assets/blog.css">
+<meta name="description" content="{{post.description}}">
+<link rel="canonical" href="{{canonical}}">
+<meta property="og:title" content="{{post.title}}">
+<meta property="og:description" content="{{post.description}}">
+<meta property="og:type" content="article">
+{{#if post.image}}<meta property="og:image" content="{{post.image}}">{{/if}}
+<script type="application/ld+json">{{{jsonLd}}}</script>
+
+<main class="blog-post">
+  <nav class="blog-breadcrumb"><a href="/blog">&larr; {{blogTitle}}</a></nav>
+
+  <article>
+    <header class="blog-post__header">
+      <h1>{{post.title}}</h1>
+      <p class="blog-post__meta">
+        <time datetime="{{post.isoDate}}">{{post.displayDate}}</time>
+        <span class="blog-post__sep">&middot;</span>
+        <span>{{post.author}}</span>
+      </p>
+    </header>
+
+    {{#if post.image}}
+      <figure class="blog-post__hero">
+        <img src="{{post.image}}" alt="{{post.imageAlt}}">
+      </figure>
+    {{/if}}
+
+    <div class="blog-post__body">
+      {{{post.body}}}
+    </div>
+  </article>
+</main>

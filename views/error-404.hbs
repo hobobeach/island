@@ -1,0 +1,93 @@
+<style>
+  :root {
+    --sky-top: #1a1033;
+    --sky-mid: #6b2d5c;
+    --sky-low: #d96b3a;
+    --sky-bot: #f3a953;
+    --sun: #ffd27a;
+    --sun-glow: #ff7a3a;
+    --ink: #f8e9c8;
+    --ink-dim: rgba(248, 233, 200, 0.7);
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    color: var(--ink);
+    background: linear-gradient(
+      180deg,
+      var(--sky-top) 0%,
+      var(--sky-mid) 35%,
+      var(--sky-low) 65%,
+      var(--sky-bot) 90%
+    );
+  }
+
+  main {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1.25rem;
+    padding: 2rem 1rem;
+    text-align: center;
+  }
+
+  .status {
+    margin: 0;
+    font-size: clamp(5rem, 18vw, 10rem);
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    color: var(--sun);
+    text-shadow: 0 0 24px var(--sun-glow);
+    line-height: 1;
+  }
+
+  h1 {
+    margin: 0;
+    font-size: clamp(1rem, 2.4vw, 1.5rem);
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+
+  p.tagline {
+    margin: 0;
+    max-width: 32rem;
+    color: var(--ink-dim);
+    font-size: clamp(0.85rem, 1.6vw, 1rem);
+    line-height: 1.5;
+  }
+
+  a.home {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.65rem 1.1rem;
+    border: 1px solid rgba(248, 233, 200, 0.55);
+    border-radius: 999px;
+    color: var(--ink);
+    text-decoration: none;
+    font-size: 0.9rem;
+    letter-spacing: 0.05em;
+    backdrop-filter: blur(4px);
+    transition: background 120ms ease, border-color 120ms ease, transform 120ms ease;
+  }
+
+  a.home:hover {
+    background: rgba(248, 233, 200, 0.12);
+    border-color: var(--ink);
+    transform: translateY(-1px);
+  }
+</style>
+
+<main>
+  <p class="status">{{ status }}</p>
+  <h1>This page wandered off</h1>
+  <p class="tagline">{{ message }}</p>
+  <a class="home" href="/">← Back home</a>
+</main>

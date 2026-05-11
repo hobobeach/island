@@ -1,0 +1,10 @@
+{{#if description}}<meta name="description" content="{{description}}">{{/if}}
+{{#if canonicalUrl}}<link rel="canonical" href="{{canonicalUrl}}">{{/if}}
+{{#if ogTitle}}<meta property="og:title" content="{{ogTitle}}">{{else}}<meta property="og:title" content="{{title}}">{{/if}}
+{{#if ogDescription}}<meta property="og:description" content="{{ogDescription}}">{{/if}}
+{{#if ogImage}}<meta property="og:image" content="{{ogImage}}">{{/if}}
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="{{#if twitterCard}}{{twitterCard}}{{else}}summary_large_image{{/if}}">
+{{#if twitterTitle}}<meta name="twitter:title" content="{{twitterTitle}}">{{else}}<meta name="twitter:title" content="{{title}}">{{/if}}
+{{#if twitterDescription}}<meta name="twitter:description" content="{{twitterDescription}}">{{/if}}
+{{#if twitterImage}}<meta name="twitter:image" content="{{twitterImage}}">{{/if}}
