@@ -22,6 +22,7 @@ log('Server is running in the ' + environment + ' environment.');
 
 import { jwtStrategy } from './shared/jwt';
 import { indexRouter } from './routes/index';
+import { inviteRouter } from './routes/invite';
 // PLUGIN blog BEGIN
 import { blogRouter } from './routes/blog';
 // PLUGIN blog END
@@ -51,7 +52,8 @@ app.set('view engine', 'hbs');
 app.use(helmet({
   contentSecurityPolicy: {
     directives: {
-      'style-src': ["'self'", "'unsafe-inline'"],
+      'style-src': ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
+      'font-src': ["'self'", 'https://fonts.gstatic.com', 'data:'],
     },
   },
 }));
@@ -66,6 +68,7 @@ app.use(trafficLogger);
 // PLUGINS: middleware
 
 app.use('/', indexRouter);
+app.use('/api/invite', inviteRouter);
 // PLUGIN blog BEGIN
 app.use('/blog', blogRouter);
 // PLUGIN blog END

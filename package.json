@@ -7,7 +7,8 @@
   "scripts": {
     "build": "rimraf ./dist && tsc",
     "start": "npm run build && node dist/server.js",
-    "dev": "nodemon"
+    "dev": "nodemon",
+    "invites": "ts-node scripts/invites.ts"
   },
   "keywords": [],
   "author": "Erik August Johnson <erik@island0.com>",

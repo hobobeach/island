@@ -1,133 +1,89 @@
-<style>
-  :root {
-    --sky-top: #1a1033;
-    --sky-mid: #6b2d5c;
-    --sky-low: #d96b3a;
-    --sky-bot: #f3a953;
-    --sun: #ffd27a;
-    --sun-glow: #ff7a3a;
-    --water: #6fb3c9;
-    --horizon: #f8e9c8;
-    --ink: #f8e9c8;
-    --ink-dim: rgba(248, 233, 200, 0.7);
-  }
+<link rel="stylesheet" href="/assets/fonts/bootstrap-icons/bootstrap-icons.min.css">
+<link rel="stylesheet" href="/assets/fonts/iconsmind/iconsmind.css">
+<link rel="stylesheet" href="/assets/vendor/node_modules/css/aos.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700&family=Source+Serif+4:ital,wght@0,400;0,500;1,400;1,500&display=swap" rel="stylesheet">
+<link href="/assets/css/theme.min.css" rel="stylesheet">
 
-  * { box-sizing: border-box; }
+<header class="z-fixed header-transparent header-absolute-top pt-lg-3">
+  <nav class="navbar navbar-expand-lg navbar-light">
+    <div class="container position-relative">
+      <a class="navbar-brand fw-bold fs-3" href="/">{{ name }}°</a>
 
-  html, body {
-    margin: 0;
-    min-height: 100vh;
-    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-    color: var(--ink);
-    background: linear-gradient(
-      180deg,
-      var(--sky-top) 0%,
-      var(--sky-mid) 35%,
-      var(--sky-low) 65%,
-      var(--sky-bot) 90%
-    );
-  }
-
-  main {
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 1.75rem;
-    padding: 2rem 1rem;
-    text-align: center;
-  }
-
-  h1 {
-    margin: 0;
-    font-size: clamp(1.75rem, 4vw, 2.75rem);
-    font-weight: 600;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    text-shadow: 0 0 18px rgba(255, 122, 58, 0.45);
-  }
-
-  .tagline {
-    margin: 0;
-    max-width: 42rem;
-    color: var(--ink-dim);
-    font-size: clamp(0.85rem, 1.6vw, 1rem);
-    line-height: 1.5;
-  }
-
-  pre.art {
-    margin: 0;
-    padding: 1rem 1.25rem;
-    font-size: clamp(0.5rem, 1.2vw, 0.85rem);
-    line-height: 1.15;
-    color: var(--horizon);
-    text-shadow: 0 0 12px rgba(255, 210, 122, 0.35);
-    white-space: pre;
-    overflow-x: auto;
-    max-width: 100%;
-    text-align: center;
-  }
-
-  pre.art .sun     { color: var(--sun); text-shadow: 0 0 14px var(--sun-glow); }
-  pre.art .glare   { color: var(--sun-glow); text-shadow: 0 0 16px var(--sun-glow); }
-  pre.art .water   { color: var(--water); }
-  pre.art .peak    { color: var(--ink); }
-  pre.art .horizon { color: var(--horizon); }
-
-  a.gh {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.65rem 1.1rem;
-    border: 1px solid rgba(248, 233, 200, 0.55);
-    border-radius: 999px;
-    color: var(--ink);
-    text-decoration: none;
-    font-size: 0.9rem;
-    letter-spacing: 0.05em;
-    backdrop-filter: blur(4px);
-    transition: background 120ms ease, border-color 120ms ease, transform 120ms ease;
-  }
-
-  a.gh:hover {
-    background: rgba(248, 233, 200, 0.12);
-    border-color: var(--ink);
-    transform: translateY(-1px);
-  }
-
-  a.gh svg { width: 1.1em; height: 1.1em; fill: currentColor; }
-
-  footer {
-    margin-top: 0.5rem;
-    font-size: 0.75rem;
-    color: var(--ink-dim);
-    letter-spacing: 0.08em;
-  }
-</style>
+      <div class="d-flex align-items-center navbar-no-collapse-items order-lg-last">
+        <div class="nav-item">
+          <a href="#" class="btn btn-secondary btn-sm">Sign In</a>
+        </div>
+      </div>
+    </div>
+  </nav>
+</header>
 
 <main>
-  <h1>Express Base</h1>
-  <p class="tagline">A TypeScript Express starter — auth, TypeORM, Helmet, rate limiting, Zod, and Pino, ready to go.</p>
+  <section class="position-relative">
+    <div class="bg-pattern text-primary text-opacity-50 opacity-25 w-100 h-100 start-0 top-0 position-absolute"></div>
+    <div class="bg-gradientwhite flip-y w-50 h-100 start-50 top-0 translate-middle-x position-absolute"></div>
+    <div class="container min-vh-100 d-flex align-items-center justify-content-center py-9 position-relative z-1">
+      <div class="row align-items-center justify-content-center w-100">
+        <div class="col-xl-4 col-lg-5 col-md-6 col-sm-8 z-2">
 
-<pre class="art" aria-label="ASCII art of a sunset over water"><span class="peak">^^</span>                                  <span class="peak">^^</span>
-   <span class="peak">^^</span>      <span class="peak">^^</span>                  <span class="peak">^^</span>      <span class="peak">^^</span>
-<span class="sun">@@@@@@@@@</span>
-<span class="sun">@@@@@@@@@@@@@@@</span>
-<span class="sun">@@@@@@@@@@@@@@@@@@</span>
-<span class="sun">@@@@@@@@@@@@@@@@@@@@</span>
- <span class="water">~~~~ ~~ ~~~~ ~~</span> <span class="glare">&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;</span> <span class="water">~~~~~ ~~~ ~~~ ~~~</span>
-<span class="water">~    ~~   ~  ~   ~~~~~~~~~~~~~~~~~~~~ ~       ~~     ~~</span>
-   <span class="water">~      ~~      ~~ ~~~~~~~~~~~~~ ~~~~  ~     ~~~    ~</span>
-   <span class="water">~  ~~     ~        ~ ~~~~~~  ~~ ~~~       ~~ ~ ~~  ~</span>
- <span class="water">~  ~       ~ ~      ~~~ ~~~~~~  ~      ~~  ~        ~</span>
-       <span class="water">~             ~        ~      ~      ~~   ~    ~</span>
-<span class="horizon">-------------------------------------------------------</span></pre>
+          <h2 class="mb-1 display-6">Hello!</h2>
+          <p class="mb-4 text-body-secondary">
+            {{ name }} is invite-only. Request an invite below.
+          </p>
 
-  <a class="gh" href="https://github.com/hobobeach/express-base" rel="noopener">
-    <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8a8 8 0 005.47 7.59c.4.07.55-.17.55-.38v-1.33c-2.22.48-2.69-1.07-2.69-1.07-.36-.93-.89-1.18-.89-1.18-.73-.5.06-.49.06-.49.81.06 1.23.83 1.23.83.72 1.22 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82A7.6 7.6 0 018 4.84a7.6 7.6 0 012 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.28.82 2.15 0 3.07-1.87 3.74-3.65 3.94.29.25.54.73.54 1.48v2.19c0 .21.15.46.55.38A8 8 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
-    View on GitHub
-  </a>
+          <div class="position-relative">
+            <div id="invite-form-section">
+              <form id="invite-form">
 
-  <footer>@hobobeach/express-base</footer>
+                <div class="input-icon-group mb-3">
+                  <span class="input-icon">
+                    <i class="bi bi-person"></i>
+                  </span>
+                  <input type="text" name="fullName" class="form-control" required id="inviteName" autofocus
+                    placeholder="Your full name">
+                </div>
+
+                <div class="input-icon-group mb-3">
+                  <span class="input-icon">
+                    <i class="bi bi-envelope"></i>
+                  </span>
+                  <input type="email" name="email" class="form-control" required id="inviteEmail"
+                    placeholder="Your email address">
+                </div>
+
+                <div id="invite-error" class="alert alert-danger py-2 mb-3" hidden></div>
+
+                <div class="d-grid">
+                  <button class="btn btn-primary" type="submit" id="invite-submit">
+                    Request Invite
+                  </button>
+                </div>
+              </form>
+
+              <p class="pt-3 small text-body-tertiary">
+                Already have an account?
+                <a href="#" class="ms-2 fw-semibold link-underline">Sign In</a>
+              </p>
+            </div>
+
+            <div id="invite-success" class="text-center py-3" hidden>
+              <div class="lh-1 mb-3" style="font-size: 4rem;">
+                <i class="bi bi-check-circle-fill text-primary"></i>
+              </div>
+              <h3 class="mb-2">Request received!</h3>
+              <p class="text-body-secondary mb-0">
+                Thanks — we'll be in touch at
+                <span id="invite-success-email" class="fw-semibold"></span>.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 </main>
+
+<script src="/assets/js/theme.bundle.min.js"></script>
+<script src="/assets/js/invite.js"></script>
