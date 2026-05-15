@@ -13,7 +13,7 @@
 
       <div class="d-flex align-items-center navbar-no-collapse-items order-lg-last">
         <div class="nav-item">
-          <a href="/login" class="btn btn-secondary btn-sm">Sign In</a>
+          <a href="/" class="btn btn-secondary btn-sm">Request Invite</a>
         </div>
       </div>
     </div>
@@ -28,55 +28,50 @@
       <div class="row align-items-center justify-content-center w-100">
         <div class="col-xl-4 col-lg-5 col-md-6 col-sm-8 z-2">
 
-          <h2 class="mb-1 display-6">Hello!</h2>
+          <h2 class="mb-1 display-6">Welcome back!</h2>
           <p class="mb-4 text-body-secondary">
-            {{ name }} is invite-only. Request an invite below.
+            Please Sign In with details...
           </p>
 
           <div class="position-relative">
-            <div id="invite-form-section">
-              <form id="invite-form">
-
+            <div>
+              <form class="needs-validation" method="post" action="/login" novalidate>
                 <div class="input-icon-group mb-3">
                   <span class="input-icon">
                     <i class="bi bi-person"></i>
                   </span>
-                  <input type="text" name="fullName" class="form-control" required id="inviteName" autofocus
-                    placeholder="Your full name">
+                  <input type="text" name="username" class="form-control" required autofocus
+                    value="{{ username }}" placeholder="Username">
                 </div>
-
                 <div class="input-icon-group mb-3">
                   <span class="input-icon">
-                    <i class="bi bi-envelope"></i>
+                    <i class="bi bi-unlock"></i>
                   </span>
-                  <input type="email" name="email" class="form-control" required id="inviteEmail"
-                    placeholder="Your email address">
+                  <input type="password" name="password" class="form-control" required placeholder="Password">
+                </div>
+                <div class="mb-3 d-flex justify-content-between">
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="remember" value="on" id="flexCheckDefault">
+                    <label class="form-check-label" for="flexCheckDefault">
+                      Remember me
+                    </label>
+                  </div>
+                  <div>
+                    <label class="text-end d-block small mb-0"><a href="#" class="link-decoration">Forget
+                        Password?</a></label>
+                  </div>
                 </div>
 
-                <div id="invite-error" class="alert alert-danger py-2 mb-3" hidden></div>
+                {{#if error}}
+                <div class="alert alert-danger py-2 mb-3">{{ error }}</div>
+                {{/if}}
 
                 <div class="d-grid">
-                  <button class="btn btn-primary" type="submit" id="invite-submit">
-                    Request Invite
+                  <button class="btn btn-primary" type="submit">
+                    Sign in
                   </button>
                 </div>
               </form>
-
-              <p class="pt-3 small text-body-tertiary">
-                Already have an account?
-                <a href="/login" class="ms-2 fw-semibold link-underline">Sign In</a>
-              </p>
-            </div>
-
-            <div id="invite-success" class="text-center py-3" hidden>
-              <div class="lh-1 mb-3" style="font-size: 4rem;">
-                <i class="bi bi-check-circle-fill text-primary"></i>
-              </div>
-              <h3 class="mb-2">Request received!</h3>
-              <p class="text-body-secondary mb-0">
-                Thanks — we'll be in touch at
-                <span id="invite-success-email" class="fw-semibold"></span>.
-              </p>
             </div>
           </div>
         </div>
@@ -86,4 +81,3 @@
 </main>
 
 <script src="/assets/js/theme.bundle.min.js"></script>
-<script src="/assets/js/invite.js"></script>

@@ -9,9 +9,22 @@ if (!secret) {
   throw new Error('JWT_SECRET environment variable is not defined.');
 }
 
+/** Cookie that carries the signed session JWT (set by the /login route). */
+export const AUTH_COOKIE = 'token';
+
+// Pull the token from the Authorization header (API clients) or, failing
+// that, from the session cookie set at login (browser sessions). Cookie
+// extraction relies on cookie-parser running earlier in the pipeline.
+const cookieExtractor = (
+  request: { cookies?: Record<string, string> }
+): string | null => request?.cookies?.[AUTH_COOKIE] ?? null;
+
 export const jwtStrategy = new passportJwt.Strategy({
   secretOrKey: secret,
-  jwtFromRequest: passportJwt.ExtractJwt.fromAuthHeaderAsBearerToken() },
+  jwtFromRequest: passportJwt.ExtractJwt.fromExtractors([
+    passportJwt.ExtractJwt.fromAuthHeaderAsBearerToken(),
+    cookieExtractor,
+  ]) },
    async (payload: any, next: any) => {
 
   const userId = payload.id;

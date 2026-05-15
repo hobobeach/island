@@ -63,7 +63,9 @@ Errors propagate via `next(createError(status, message))` from `http-errors`. Th
 If you add a new content-type branch, preserve the `status >= 500` sanitization.
 
 ### Auth (`src/shared/jwt.ts`)
-Passport JWT strategy registered as `'jwt'` in `src/app.ts:28`. Tokens extracted from `Authorization: Bearer <token>`. The strategy currently passes the JWT payload through as `req.user` without a DB lookup — there's no user persistence layer yet. `generateToken(payload, expiresIn)` is the canonical sign helper.
+Passport JWT strategy registered as `'jwt'` in `src/app.ts`. Tokens are extracted from the `Authorization: Bearer <token>` header or, failing that, the `AUTH_COOKIE` (`'token'`) cookie set by `POST /login` — cookie extraction depends on `cookie-parser` running earlier in the pipeline. The strategy passes the JWT payload through as `req.user` without a DB lookup, so a token stays valid until expiry even if the `User` row changes. `generateToken(payload, expiresIn)` is the canonical sign helper.
+
+`POST /login` (`src/routes/login.ts`) verifies `username` + `password` against the `User` table with `bcrypt.compare` (running a dummy compare for unknown usernames to keep response timing constant), then issues an httpOnly JWT cookie and redirects admins to `/admin` and everyone else to `/`. "Remember me" controls token expiry (`30d` vs `1d`) and whether the cookie persists. `GET /logout` clears the cookie and redirects to `/login`. `/admin` is not yet a real route.
 
 ### Persistence (`src/app-data-source.ts`)
 TypeORM with `type: 'sqlite'`, `synchronize: true`, `logging: true`. The `entities` array is **empty** — when adding entities, register them here and rely on auto-sync for dev (synchronize is unsafe for production).

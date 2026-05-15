@@ -23,6 +23,7 @@ log('Server is running in the ' + environment + ' environment.');
 import { jwtStrategy } from './shared/jwt';
 import { indexRouter } from './routes/index';
 import { inviteRouter } from './routes/invite';
+import { loginRouter, logoutRouter } from './routes/login';
 // PLUGIN blog BEGIN
 import { blogRouter } from './routes/blog';
 // PLUGIN blog END
@@ -68,6 +69,8 @@ app.use(trafficLogger);
 // PLUGINS: middleware
 
 app.use('/', indexRouter);
+app.use('/login', loginRouter);
+app.use('/logout', logoutRouter);
 app.use('/api/invite', inviteRouter);
 // PLUGIN blog BEGIN
 app.use('/blog', blogRouter);
