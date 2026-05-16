@@ -14,6 +14,20 @@
 <!--//Page content//-->
 <div class="content px-3 px-lg-6 pt-3 pb-0 d-flex flex-column-fluid position-relative">
   <div class="container-fluid px-0">
+
+    {{#if notice}}
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+      {{ notice }}
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {{/if}}
+    {{#if error}}
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+      {{ error }}
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {{/if}}
+
     <div class="card overflow-hidden">
       <div class="card-body p-0">
         {{#if requests.length}}
@@ -27,7 +41,8 @@
                 <th>User Agent</th>
                 <th>Referrer</th>
                 <th>Requested</th>
-                <th class="pe-3 pe-lg-6">Status</th>
+                <th>Status</th>
+                <th class="pe-3 pe-lg-6 text-end">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -39,7 +54,17 @@
                 <td class="small text-body-secondary text-truncate" style="max-width: 220px;" title="{{ userAgent }}">{{ userAgent }}</td>
                 <td class="small text-body-secondary text-truncate" style="max-width: 160px;" title="{{ referer }}">{{ referer }}</td>
                 <td class="small text-body-secondary text-nowrap">{{ requestedAt }}</td>
-                <td class="pe-3 pe-lg-6"><span class="badge text-bg-{{ statusClass }}">{{ statusLabel }}</span></td>
+                <td><span class="badge text-bg-{{ statusClass }}">{{ statusLabel }}</span></td>
+                <td class="pe-3 pe-lg-6 text-end text-nowrap">
+                  {{#if isPending}}
+                  <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#approve-modal-{{ id }}">Approve</button>
+                  <form method="post" action="/admin/invites/{{ id }}/reject" class="d-inline">
+                    <button type="submit" class="btn btn-sm btn-outline-danger">Reject</button>
+                  </form>
+                  {{else}}
+                  <span class="text-body-secondary">&mdash;</span>
+                  {{/if}}
+                </td>
               </tr>
               {{/each}}
             </tbody>
@@ -53,6 +78,50 @@
         {{/if}}
       </div>
     </div>
+
   </div>
 </div>
 <!--//Page content End//-->
+
+<!--//Approve modals — one per pending request//-->
+{{#each requests}}
+{{#if isPending}}
+<div class="modal fade" id="approve-modal-{{ id }}" tabindex="-1" aria-labelledby="approve-label-{{ id }}" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <form method="post" action="/admin/invites/{{ id }}/approve">
+        <div class="modal-header">
+          <h5 class="modal-title" id="approve-label-{{ id }}">Approve invite</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p class="text-body-secondary small mb-4">
+            Create an account for <strong>{{ fullName }}</strong> &lt;{{ email }}&gt;.
+          </p>
+          <div class="mb-3">
+            <label class="form-label" for="username-{{ id }}">Username</label>
+            <input type="text" class="form-control" id="username-{{ id }}" name="username" value="{{ suggestedUsername }}" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label" for="password-{{ id }}">Password</label>
+            <input type="password" class="form-control" id="password-{{ id }}" name="password" minlength="8" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label" for="confirm-{{ id }}">Confirm password</label>
+            <input type="password" class="form-control" id="confirm-{{ id }}" name="confirmPassword" minlength="8" required>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" value="on" id="admin-{{ id }}" name="isAdmin">
+            <label class="form-check-label" for="admin-{{ id }}">Grant admin privileges</label>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-primary">Approve &amp; create account</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{{/if}}
+{{/each}}
