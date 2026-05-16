@@ -31,7 +31,7 @@ function renderLogin(response: Response, extra: Record<string, unknown> = {}): v
   });
 }
 
-loginRouter.get('/', (request: Request, response: Response): void => {
+loginRouter.get('/', (_request: Request, response: Response): void => {
   renderLogin(response);
 });
 
@@ -84,7 +84,7 @@ loginRouter.post('/', async (
   }
 });
 
-logoutRouter.get('/', (request: Request, response: Response): void => {
+logoutRouter.get('/', (_request: Request, response: Response): void => {
   response.clearCookie(AUTH_COOKIE, baseCookieOptions);
   response.redirect('/login');
 });

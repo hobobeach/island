@@ -24,6 +24,7 @@ import { jwtStrategy } from './shared/jwt';
 import { indexRouter } from './routes/index';
 import { inviteRouter } from './routes/invite';
 import { loginRouter, logoutRouter } from './routes/login';
+import { adminRouter } from './routes/admin';
 // PLUGIN blog BEGIN
 import { blogRouter } from './routes/blog';
 // PLUGIN blog END
@@ -62,6 +63,7 @@ app.use(cors());
 app.use(express.json({ limit: '5mb' }));
 app.use(express.urlencoded({ extended: true, limit: '5mb' }));
 app.use(cookieParser());
+app.use(passport.initialize());
 app.use(express.static(path.join(__dirname, '../public')));
 // PLUGIN traffic BEGIN
 app.use(trafficLogger);
@@ -71,6 +73,7 @@ app.use(trafficLogger);
 app.use('/', indexRouter);
 app.use('/login', loginRouter);
 app.use('/logout', logoutRouter);
+app.use('/admin', adminRouter);
 app.use('/api/invite', inviteRouter);
 // PLUGIN blog BEGIN
 app.use('/blog', blogRouter);
