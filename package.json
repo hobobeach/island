@@ -8,7 +8,8 @@
     "build": "rimraf ./dist && tsc",
     "start": "npm run build && node dist/server.js",
     "dev": "nodemon",
-    "invites": "ts-node scripts/invites.ts"
+    "invites": "ts-node scripts/invites.ts",
+    "create-admin": "ts-node scripts/create-admin.ts"
   },
   "keywords": [],
   "author": "Erik August Johnson <erik@island0.com>",

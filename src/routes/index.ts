@@ -10,6 +10,7 @@ indexRouter.get('/', async (request: Request, response: Response): Promise<void>
     response.render('index', {
     ...config,
     isHome: true,
+    title: 'Island: An invite-only online community'
   });
 
 });
