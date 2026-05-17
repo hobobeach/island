@@ -27,7 +27,7 @@ There is no test framework, linter, or formatter wired up. Nodemon ignores `*.sp
 Optional:
 
 - `PORT` (default 3000; server auto-falls back to `port+1` on `EADDRINUSE`, see `src/server.ts:14-23`)
-- `DATABASE_NAME` (default `database.sqlite`, written to repo root)
+- `DATABASE_PATH` / `DATABASE_NAME` — SQLite file location (`src/app-data-source.ts`). `DATABASE_PATH` (a full path) takes precedence; otherwise `DATABASE_NAME` (a bare filename, default `database.sqlite`). Relative values resolve against the repo root, so the location doesn't depend on the process's working directory.
 - `SES_FROM_ADDRESS` + `AWS_REGION` — sender identity and region for invite emails via AWS SES (`src/shared/mailer.ts`). When **either is blank the email is logged to the console instead of sent** — the default in development. AWS credentials come from the standard provider chain (`AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY` env vars or an IAM role).
 - `APP_URL` — base URL used to build the emailed signup link **and** Stripe Checkout success/cancel URLs (default: `config.url`)
 - `STRIPE_SECRET_KEY` — required to create PaymentIntents for the membership fee (`src/shared/stripe.ts`); `getStripe()` throws without it. `STRIPE_PUBLISHABLE_KEY` — required by the browser card form on `/pay`; `GET /pay` throws without it.

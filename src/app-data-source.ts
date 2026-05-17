@@ -1,3 +1,4 @@
+import path from 'path';
 import { DataSource } from 'typeorm';
 import 'reflect-metadata';
 // PLUGIN traffic BEGIN
@@ -7,9 +8,20 @@ import { InviteRequest } from './entities/invite-request.entity';
 import { User } from './entities/user.entity';
 // PLUGINS: data-source-import
 
+// Resolve the SQLite file location. `DATABASE_PATH` (a full path) takes
+// precedence; otherwise `DATABASE_NAME` (a bare filename) or the default.
+// Relative values are anchored to the repo root so the location doesn't
+// depend on the process's working directory.
+const databaseSetting = process.env.DATABASE_PATH
+    || process.env.DATABASE_NAME
+    || 'database.sqlite';
+const databaseFile = path.isAbsolute(databaseSetting)
+    ? databaseSetting
+    : path.resolve(__dirname, '..', databaseSetting);
+
 export const AppDataSource = new DataSource({
     type: 'sqlite',
-    database: process.env.DATABASE_NAME || 'database.sqlite',
+    database: databaseFile,
     entities: [
         // PLUGIN traffic BEGIN
         RequestLog,
