@@ -1,0 +1,70 @@
+<link rel="stylesheet" href="/assets/fonts/bootstrap-icons/bootstrap-icons.min.css">
+<link rel="stylesheet" href="/assets/fonts/iconsmind/iconsmind.css">
+<link rel="stylesheet" href="/assets/vendor/node_modules/css/aos.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700&family=Source+Serif+4:ital,wght@0,400;0,500;1,400;1,500&display=swap" rel="stylesheet">
+<link href="/assets/css/theme.min.css" rel="stylesheet">
+
+<header class="z-fixed header-transparent header-absolute-top pt-lg-3">
+  <nav class="navbar navbar-expand-lg navbar-light">
+    <div class="container position-relative">
+      <a class="navbar-brand fw-bold fs-3" href="/">{{ name }}°</a>
+
+      <div class="d-flex align-items-center navbar-no-collapse-items order-lg-last">
+        <div class="nav-item">
+          <a href="/logout" class="btn btn-secondary btn-sm">Sign Out</a>
+        </div>
+      </div>
+    </div>
+  </nav>
+</header>
+
+<main>
+  <section class="position-relative">
+    <div class="bg-pattern text-primary text-opacity-50 opacity-25 w-100 h-100 start-0 top-0 position-absolute"></div>
+    <div class="bg-gradientwhite flip-y w-50 h-100 start-50 top-0 translate-middle-x position-absolute"></div>
+    <div class="container min-vh-100 d-flex align-items-center justify-content-center py-9 position-relative z-1">
+      <div class="row align-items-center justify-content-center w-100">
+        <div class="col-xl-4 col-lg-5 col-md-6 col-sm-8 z-2">
+
+          <h2 class="mb-1 display-6">One last step</h2>
+          <p class="mb-4 text-body-secondary">
+            Welcome aboard, {{ fullName }}! Activate your membership with a one-time
+            <span class="fw-semibold">{{ fee }}</span> fee.
+          </p>
+
+          <div class="card border-0 shadow-sm">
+            <div class="card-body p-4">
+              <div class="d-flex align-items-baseline mb-3">
+                <span class="display-5 fw-bold">{{ fee }}</span>
+                <span class="ms-2 text-body-secondary">one-time</span>
+              </div>
+
+              <form id="payment-form" data-stripe-pk="{{ publishableKey }}" data-client-secret="{{ clientSecret }}">
+                <label class="form-label" for="card-element">Card details</label>
+                <!-- Stripe Elements mounts the card input here -->
+                <div id="card-element" class="form-control" style="padding-top: 0.7rem; padding-bottom: 0.7rem;"></div>
+                <div id="card-errors" class="text-danger small mt-2" role="alert"></div>
+
+                <div class="d-grid mt-3">
+                  <button id="pay-submit" class="btn btn-primary" type="submit">
+                    Pay {{ fee }}
+                  </button>
+                </div>
+              </form>
+
+              <p class="text-center small text-body-tertiary mt-3 mb-0">
+                <i class="bi bi-lock-fill me-1"></i>Payments processed securely by Stripe
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script src="/assets/js/theme.bundle.min.js"></script>
+<script src="https://js.stripe.com/v3/"></script>
+<script src="/assets/js/pay.js"></script>

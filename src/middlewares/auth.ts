@@ -31,3 +31,27 @@ export function requireAdmin(
     },
   )(request, response, next);
 }
+
+/**
+ * Route guard that admits any authenticated user. Authenticates the JWT
+ * (Authorization header or session cookie); an unauthenticated visitor is
+ * redirected to `/login`, otherwise the payload is attached as `request.user`.
+ */
+export function requireAuth(
+  request: Request,
+  response: Response,
+  next: NextFunction,
+): void {
+  passport.authenticate(
+    'jwt',
+    { session: false },
+    (error: unknown, user: Express.User | false | null): void => {
+      if (error || !user) {
+        response.redirect('/login');
+        return;
+      }
+      request.user = user;
+      next();
+    },
+  )(request, response, next);
+}

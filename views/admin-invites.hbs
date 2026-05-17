@@ -58,11 +58,18 @@
                 <td class="pe-3 pe-lg-6 text-end text-nowrap">
                   {{#if isPending}}
                   <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#approve-modal-{{ id }}">Approve</button>
+                  <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#invite-modal-{{ id }}">Email Invite</button>
                   <form method="post" action="/admin/invites/{{ id }}/reject" class="d-inline">
                     <button type="submit" class="btn btn-sm btn-outline-danger">Reject</button>
                   </form>
                   {{else}}
+                  {{#if isInvited}}
+                  <form method="post" action="/admin/invites/{{ id }}/resend" class="d-inline">
+                    <button type="submit" class="btn btn-sm btn-outline-primary">Resend Invite</button>
+                  </form>
+                  {{else}}
                   <span class="text-body-secondary">&mdash;</span>
+                  {{/if}}
                   {{/if}}
                 </td>
               </tr>
@@ -83,9 +90,35 @@
 </div>
 <!--//Page content End//-->
 
-<!--//Approve modals — one per pending request//-->
+<!--//Action modals — one set per pending request//-->
 {{#each requests}}
 {{#if isPending}}
+<div class="modal fade" id="invite-modal-{{ id }}" tabindex="-1" aria-labelledby="invite-label-{{ id }}" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <form method="post" action="/admin/invites/{{ id }}/invite">
+        <div class="modal-header">
+          <h5 class="modal-title" id="invite-label-{{ id }}">Email a signup invite</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p class="text-body-secondary small mb-4">
+            Email <strong>{{ fullName }}</strong> &lt;{{ email }}&gt; a link to set their own
+            username and password. The account is created when they complete signup.
+          </p>
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" value="on" id="invite-admin-{{ id }}" name="isAdmin">
+            <label class="form-check-label" for="invite-admin-{{ id }}">Grant admin privileges</label>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-primary">Send invite email</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
 <div class="modal fade" id="approve-modal-{{ id }}" tabindex="-1" aria-labelledby="approve-label-{{ id }}" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">

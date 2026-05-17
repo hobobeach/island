@@ -1,10 +1,11 @@
-import express, { Request, Response, NextFunction, CookieOptions } from 'express';
+import express, { Request, Response, NextFunction } from 'express';
 import bcrypt from 'bcryptjs';
 
 import { config } from '../shared/config';
 import { AppDataSource } from '../app-data-source';
 import { User } from '../entities/user.entity';
-import { generateToken, AUTH_COOKIE } from '../shared/jwt';
+import { AUTH_COOKIE } from '../shared/jwt';
+import { issueSession, authCookieOptions } from '../shared/session';
 
 export const loginRouter = express.Router();
 export const logoutRouter = express.Router();
@@ -12,16 +13,6 @@ export const logoutRouter = express.Router();
 // A valid bcrypt hash to compare against when the username doesn't exist, so
 // the response takes the same time whether or not the account is real.
 const DUMMY_HASH = bcrypt.hashSync('login-timing-equalizer', 10);
-
-const REMEMBER_MAX_AGE_MS = 30 * 24 * 60 * 60 * 1000; // 30 days
-
-// Shared attributes for the auth cookie. clearCookie must use the same set
-// (minus maxAge) for the browser to recognise and drop the cookie.
-const baseCookieOptions: CookieOptions = {
-  httpOnly: true,
-  sameSite: 'lax',
-  secure: process.env.NODE_ENV === 'production',
-};
 
 function renderLogin(response: Response, extra: Record<string, unknown> = {}): void {
   response.render('login', {
@@ -31,8 +22,12 @@ function renderLogin(response: Response, extra: Record<string, unknown> = {}): v
   });
 }
 
-loginRouter.get('/', (_request: Request, response: Response): void => {
-  renderLogin(response);
+loginRouter.get('/', (request: Request, response: Response): void => {
+  // Shown after completing signup from an emailed invite link.
+  const extra = request.query.registered
+    ? { notice: 'Your account is ready — please sign in.' }
+    : {};
+  renderLogin(response, extra);
 });
 
 loginRouter.post('/', async (
@@ -67,24 +62,17 @@ loginRouter.post('/', async (
       return;
     }
 
-    const token = generateToken(
-      { id: user.id, uuid: user.uuid, username: user.username, isAdmin: user.isAdmin },
-      remember ? '30d' : '1d',
-    );
+    issueSession(response, user, remember);
 
-    const cookieOptions: CookieOptions = { ...baseCookieOptions };
-    if (remember) {
-      cookieOptions.maxAge = REMEMBER_MAX_AGE_MS;
-    }
-    response.cookie(AUTH_COOKIE, token, cookieOptions);
-
-    response.redirect(user.isAdmin ? '/admin' : '/');
+    // Admins → dashboard; everyone else must clear the one-time fee first.
+    const destination = user.isAdmin ? '/admin' : user.hasPaid ? '/' : '/pay';
+    response.redirect(destination);
   } catch (error) {
     next(error);
   }
 });
 
 logoutRouter.get('/', (_request: Request, response: Response): void => {
-  response.clearCookie(AUTH_COOKIE, baseCookieOptions);
+  response.clearCookie(AUTH_COOKIE, authCookieOptions);
   response.redirect('/login');
 });

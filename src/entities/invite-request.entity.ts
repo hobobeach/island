@@ -6,7 +6,7 @@ import {
   Index,
 } from 'typeorm';
 
-export type InviteRequestStatus = 'pending' | 'approved' | 'rejected';
+export type InviteRequestStatus = 'pending' | 'invited' | 'approved' | 'rejected';
 
 @Entity('invite_requests')
 @Index(['createdAt'])
@@ -38,4 +38,13 @@ export class InviteRequest {
 
   @Column({ type: 'text', default: 'pending' })
   status!: InviteRequestStatus;
+
+  /** Whether the account created from this invite should be an admin. Set
+   *  when an admin chooses "email invite"; applied when the user signs up. */
+  @Column({ type: 'boolean', default: false })
+  grantAdmin!: boolean;
+
+  /** When the signup invite email was sent (drives the link's expiry). */
+  @Column({ type: 'datetime', nullable: true })
+  invitedAt!: Date | null;
 }

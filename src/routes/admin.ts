@@ -7,6 +7,7 @@ import { requireAdmin } from '../middlewares/auth';
 import { AppDataSource } from '../app-data-source';
 import { InviteRequest } from '../entities/invite-request.entity';
 import { User } from '../entities/user.entity';
+import { sendInviteEmail } from '../shared/mailer';
 
 export const adminRouter = express.Router();
 
@@ -23,12 +24,16 @@ const DASHBOARD_SCRIPTS = [
 
 const STATUS_CLASS: Record<string, string> = {
   pending: 'warning',
+  invited: 'info',
   approved: 'success',
   rejected: 'danger',
 };
 
 const BCRYPT_ROUNDS = 10;
 const MIN_PASSWORD_LENGTH = 8;
+
+// Base URL used to build the emailed signup link.
+const APP_URL = (process.env.APP_URL || config.url).replace(/\/+$/, '');
 
 /** Post/Redirect/Get back to the list with a one-off flash message. */
 function flash(response: Response, key: 'ok' | 'error', message: string): void {
@@ -77,6 +82,7 @@ adminRouter.get('/invites', async (
       statusLabel: invite.status.charAt(0).toUpperCase() + invite.status.slice(1),
       statusClass: STATUS_CLASS[invite.status] ?? 'secondary',
       isPending: invite.status === 'pending',
+      isInvited: invite.status === 'invited',
       // Suggested account username — the email's local part, cleaned up.
       suggestedUsername: invite.email.split('@')[0].replace(/[^a-zA-Z0-9._-]/g, ''),
     }));
@@ -164,6 +170,99 @@ adminRouter.post('/invites/:id/approve', async (
       'ok',
       `Account "${username}" created for ${invite.email}${isAdmin ? ' (admin).' : '.'}`,
     );
+  } catch (error) {
+    next(error);
+  }
+});
+
+// Approve a pending request by emailing the applicant a signup link; the
+// account is created when they complete signup at /signup/:token.
+adminRouter.post('/invites/:id/invite', async (
+  request: Request,
+  response: Response,
+  next: NextFunction,
+): Promise<void> => {
+  try {
+    const id = Number(request.params.id);
+    if (!Number.isInteger(id)) {
+      return flash(response, 'error', 'Invalid invite request.');
+    }
+
+    const grantAdmin = request.body?.isAdmin !== undefined;
+    const inviteRepo = AppDataSource.getRepository(InviteRequest);
+    const userRepo = AppDataSource.getRepository(User);
+
+    const invite = await inviteRepo.findOne({ where: { id } });
+    if (!invite) {
+      return flash(response, 'error', 'Invite request not found.');
+    }
+    if (invite.status !== 'pending') {
+      return flash(response, 'error', 'That request has already been handled.');
+    }
+    if (await userRepo.findOne({ where: { email: invite.email } })) {
+      return flash(response, 'error', `An account already exists for ${invite.email}.`);
+    }
+
+    const signupUrl = `${APP_URL}/signup/${invite.uuid}`;
+    try {
+      await sendInviteEmail(invite.email, invite.fullName, signupUrl);
+    } catch (sendError) {
+      // Send failed — leave the request pending so it can be retried.
+      return flash(
+        response,
+        'error',
+        sendError instanceof Error ? sendError.message : 'Could not send the invite email.',
+      );
+    }
+
+    invite.status = 'invited';
+    invite.grantAdmin = grantAdmin;
+    invite.invitedAt = new Date();
+    await inviteRepo.save(invite);
+
+    return flash(response, 'ok', `Invite email sent to ${invite.email}.`);
+  } catch (error) {
+    next(error);
+  }
+});
+
+// Resend the signup email for an already-invited request (also resets the
+// 14-day link expiry by updating invitedAt).
+adminRouter.post('/invites/:id/resend', async (
+  request: Request,
+  response: Response,
+  next: NextFunction,
+): Promise<void> => {
+  try {
+    const id = Number(request.params.id);
+    if (!Number.isInteger(id)) {
+      return flash(response, 'error', 'Invalid invite request.');
+    }
+
+    const inviteRepo = AppDataSource.getRepository(InviteRequest);
+    const invite = await inviteRepo.findOne({ where: { id } });
+    if (!invite) {
+      return flash(response, 'error', 'Invite request not found.');
+    }
+    if (invite.status !== 'invited') {
+      return flash(response, 'error', 'That request has no outstanding invite to resend.');
+    }
+
+    const signupUrl = `${APP_URL}/signup/${invite.uuid}`;
+    try {
+      await sendInviteEmail(invite.email, invite.fullName, signupUrl);
+    } catch (sendError) {
+      return flash(
+        response,
+        'error',
+        sendError instanceof Error ? sendError.message : 'Could not send the invite email.',
+      );
+    }
+
+    invite.invitedAt = new Date();
+    await inviteRepo.save(invite);
+
+    return flash(response, 'ok', `Invite email resent to ${invite.email}.`);
   } catch (error) {
     next(error);
   }

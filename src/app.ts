@@ -24,6 +24,8 @@ import { jwtStrategy } from './shared/jwt';
 import { indexRouter } from './routes/index';
 import { inviteRouter } from './routes/invite';
 import { loginRouter, logoutRouter } from './routes/login';
+import { signupRouter } from './routes/signup';
+import { payRouter } from './routes/pay';
 import { adminRouter } from './routes/admin';
 // PLUGIN blog BEGIN
 import { blogRouter } from './routes/blog';
@@ -56,6 +58,11 @@ app.use(helmet({
     directives: {
       'style-src': ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
       'font-src': ["'self'", 'https://fonts.gstatic.com', 'data:'],
+      // Stripe Elements on the custom /pay page: Stripe.js, its card iframe
+      // and 3-D Secure frames, and the API calls it makes from the browser.
+      'script-src': ["'self'", 'https://js.stripe.com'],
+      'frame-src': ["'self'", 'https://js.stripe.com', 'https://hooks.stripe.com'],
+      'connect-src': ["'self'", 'https://api.stripe.com'],
     },
   },
 }));
@@ -73,6 +80,8 @@ app.use(trafficLogger);
 app.use('/', indexRouter);
 app.use('/login', loginRouter);
 app.use('/logout', logoutRouter);
+app.use('/signup', signupRouter);
+app.use('/pay', payRouter);
 app.use('/admin', adminRouter);
 app.use('/api/invite', inviteRouter);
 // PLUGIN blog BEGIN

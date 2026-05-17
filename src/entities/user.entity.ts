@@ -37,4 +37,16 @@ export class User {
 
   @Column({ type: 'boolean', default: false })
   isAdmin!: boolean;
+
+  /** Whether the one-time membership fee has been paid. */
+  @Column({ type: 'boolean', default: false })
+  hasPaid!: boolean;
+
+  /** When the membership fee was paid. */
+  @Column({ type: 'datetime', nullable: true })
+  paidAt!: Date | null;
+
+  /** Stripe PaymentIntent id of the membership payment, for reconciliation. */
+  @Column({ type: 'text', nullable: true })
+  stripePaymentIntentId!: string | null;
 }
