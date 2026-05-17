@@ -20,7 +20,7 @@ const databaseFile = path.isAbsolute(databaseSetting)
     : path.resolve(__dirname, '..', databaseSetting);
 
 export const AppDataSource = new DataSource({
-    type: 'sqlite',
+    type: 'better-sqlite3',
     database: databaseFile,
     entities: [
         // PLUGIN traffic BEGIN

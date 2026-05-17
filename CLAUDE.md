@@ -5,7 +5,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Commands
 
 ```sh
-npm install            # bundled .npmrc enables legacy-peer-deps (see "Install caveat" below)
+npm install            # install dependencies (resolves cleanly — no .npmrc needed)
 npm run dev            # nodemon → ts-node src/server.ts; reloads on src/, views/, public/ changes
 npm run build          # rimraf ./dist && tsc
 npm start              # build + node dist/server.js
@@ -13,10 +13,6 @@ npx tsc --noEmit       # type-check without emitting (no lint or test scripts ar
 ```
 
 There is no test framework, linter, or formatter wired up. Nodemon ignores `*.spec.ts` / `*.test.ts` proactively, but no harness will pick them up.
-
-## Install caveat
-
-`npm install` relies on `legacy-peer-deps=true` in `.npmrc` to resolve a peerOptional mismatch: `typeorm@0.3.x` declares `sqlite3@^5`, but this repo uses `sqlite3@^6`. Don't strip `.npmrc` or run `npm install --strict-peer-deps` — install will fail.
 
 ## Environment
 
@@ -76,7 +72,7 @@ New non-admin accounts owe a one-time membership fee (`MEMBERSHIP_FEE_CENTS`, `s
 Payment uses a **custom card form on the site** (no hosted Checkout redirect): `GET /pay` creates a card-only **PaymentIntent** (`payment_method_types: ['card']`, `metadata.userId`) and renders `pay.hbs`, which embeds a **Stripe Card Element**. The browser-side `public/assets/js/pay.js` reads the publishable key and `client_secret` from `data-` attributes, mounts the element, and calls `stripe.confirmCardPayment(...)`; on success it navigates to `GET /pay/success?payment_intent=…`, which retrieves the PaymentIntent, verifies `status === 'succeeded'` and a matching `metadata.userId`, then sets `hasPaid` / `paidAt` / `stripePaymentIntentId` on the `User`. Admins and already-paid users are bounced off `/pay`. Confirmation relies on the user reaching `/pay/success` — a Stripe **webhook** (`payment_intent.succeeded`) is the recommended hardening. Both `STRIPE_SECRET_KEY` (server) and `STRIPE_PUBLISHABLE_KEY` (browser) are now used.
 
 ### Persistence (`src/app-data-source.ts`)
-TypeORM with `type: 'sqlite'`, `synchronize: true`, `logging: true`. The `entities` array is **empty** — when adding entities, register them here and rely on auto-sync for dev (synchronize is unsafe for production).
+TypeORM with `type: 'better-sqlite3'`, `synchronize: true`, `logging: true`. The `better-sqlite3` driver ships prebuilt native binaries (no from-source compile), which keeps installs reliable in CI/production. Register new entities in the `entities` array and rely on auto-sync for dev (synchronize is unsafe for production).
 
 ### Views (`views/`)
 Handlebars via `express-handlebars`, layout `default.hbs` injects `{{{ body }}}` and `{{ title }}`. Templates are passed `...config` (from `src/shared/config.ts`) plus per-render data. `config` is currently safe to spread into render contexts (no secrets) — keep it that way; if secrets need to live somewhere, don't put them in `config`.
