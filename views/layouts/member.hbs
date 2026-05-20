@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+
+    <!--favicon-->
+    <link rel="icon" type="image/svg+xml" href="/assets/img/favicon.svg">
+    <!--Bootstrap icons-->
+    <link href="/admin-assets/fonts/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+
+    <!--Google web fonts-->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@100..900&family=Geist:wght@100..900&display=swap" rel="stylesheet">
+    <!--Material icons-->
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@48,400,0,0" />
+    <!--Simplebar css-->
+    <link rel="stylesheet" href="/admin-assets/vendor/css/simplebar.min.css">
+    <!--Main style-->
+    <link rel="stylesheet" href="/admin-assets/css/style.min.css">
+  </head>
+
+  <body>
+
+    <!--PreLoader-->
+    <div class="loader bg-body">
+      <div class="content flex-column p-4 pb-0 d-flex justify-content-center align-items-center flex-column-fluid position-relative">
+        <div class="w-100 h-100 position-relative d-flex align-items-center justify-content-center">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-loader spinner-grow me-2"><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"/><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"/><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"/></svg>
+          <div>
+            <span>Loading...</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="d-flex flex-column flex-root">
+      <div class="page d-flex flex-row flex-column-fluid">
+
+        <!--Sidebar-->
+        <aside class="page-sidebar">
+          <div class="h-100 flex-column d-flex justify-content-start">
+
+            <div class="aside-logo d-flex align-items-center flex-shrink-0 justify-content-start px-3 position-relative">
+              <a href="/" class="d-block">
+                <div class="d-flex align-items-center flex-no-wrap text-truncate">
+                  <span class="sidebar-icon d-flex align-items-center justify-content-center fs-4 lh-1 text-white rounded-3 bg-primary">
+                    <svg width="32" height="32" viewBox="0 0 32 32" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M4 28 Q16 21 28 28 Z"></path>
+                      <path d="M15 13 C15 18 13 22 12 25 L16 25 C17 22 17 18 17 13 Z"></path>
+                      <path d="M16 13 C10 9 5 10 3 14 C7 11 12 12 16 13 Z"></path>
+                      <path d="M16 13 C12 7 8 5 5 5 C9 7 13 9 16 13 Z"></path>
+                      <path d="M16 13 C14 7 15 3 16 1 C17 4 18 8 16 13 Z"></path>
+                      <path d="M16 13 C20 7 24 5 27 5 C23 7 19 9 16 13 Z"></path>
+                      <path d="M16 13 C22 9 27 10 29 14 C25 11 20 12 16 13 Z"></path>
+                    </svg>
+                  </span>
+                  <span class="sidebar-text ms-3">
+                    <span class="sidebar-text text-truncate fs-3 fw-bold">Island°</span>
+                  </span>
+                </div>
+              </a>
+            </div>
+
+            <div class="aside-menu my-auto" data-simplebar>
+              <nav class="flex-grow-1 h-100" id="page-navbar">
+                <ul class="nav flex-column collapse-group collapse d-flex">
+                  <li class="nav-item sidebar-title text-truncate opacity-50 small">
+                    <i class="bi bi-three-dots"></i>
+                    <span class="sidebar-text">Main</span>
+                  </li>
+                  <li class="nav-item">
+                    <a href="/" class="nav-link d-flex align-items-center text-truncate {{#if navDashboard}}active{{/if}}">
+                      <span class="sidebar-icon">
+                        <span class="material-symbols-rounded">
+                          space_dashboard
+                        </span>
+                      </span>
+                      <span class="sidebar-text">Dashboard</span>
+                    </a>
+                  </li>
+                  {{#if isAdmin}}
+                  <li class="nav-item mt-2 sidebar-title text-truncate small opacity-50">
+                    <i class="bi bi-three-dots"></i>
+                    <span class="sidebar-text">Staff</span>
+                  </li>
+                  <li class="nav-item">
+                    <a href="/admin" class="nav-link d-flex align-items-center text-truncate">
+                      <span class="sidebar-icon">
+                        <span class="material-symbols-rounded">
+                          shield_person
+                        </span>
+                      </span>
+                      <span class="sidebar-text">Admin Area</span>
+                    </a>
+                  </li>
+                  {{/if}}
+                </ul>
+              </nav>
+            </div>
+          </div>
+        </aside>
+
+        <!--Sidebar close button for 991px or below-->
+        <div class="sidebar-close d-lg-none">
+          <a href="#"></a>
+        </div>
+
+        <!--Page content-->
+        <main class="page-content d-flex flex-column flex-row-fluid">
+
+          <!--Page header-->
+          <header class="navbar transition-base border-bottom mb-3 px-3 px-lg-6 align-items-center page-header navbar-expand navbar-light">
+            <a href="/" class="navbar-brand d-block d-lg-none">
+              <div class="d-flex align-items-center flex-no-wrap text-truncate">
+                <span class="sidebar-icon bg-gradient-primary rounded-3 size-40 fw-bolder text-white">
+                  <svg width="32" height="32" viewBox="0 0 32 32" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M4 28 Q16 21 28 28 Z"></path>
+                    <path d="M15 13 C15 18 13 22 12 25 L16 25 C17 22 17 18 17 13 Z"></path>
+                    <path d="M16 13 C10 9 5 10 3 14 C7 11 12 12 16 13 Z"></path>
+                    <path d="M16 13 C12 7 8 5 5 5 C9 7 13 9 16 13 Z"></path>
+                    <path d="M16 13 C14 7 15 3 16 1 C17 4 18 8 16 13 Z"></path>
+                    <path d="M16 13 C20 7 24 5 27 5 C23 7 19 9 16 13 Z"></path>
+                    <path d="M16 13 C22 9 27 10 29 14 C25 11 20 12 16 13 Z"></path>
+                  </svg>
+                </span>
+              </div>
+            </a>
+            <ul class="navbar-nav d-flex align-items-center h-100">
+              <li class="nav-item d-none d-lg-flex flex-column h-100 me-1 align-items-center justify-content-center">
+                <a href="#" class="sidebar-trigger nav-link size-40 d-flex align-items-center justify-content-center p-0">
+                  <span class="material-symbols-rounded fs-4">
+                    menu_open
+                  </span>
+                </a>
+              </li>
+            </ul>
+            <ul class="navbar-nav ms-auto d-flex align-items-center h-100">
+              <!--Dark Mode-->
+              <li class="nav-item dropdown">
+                <a href="#" class="nav-link p-0 size-40 dropdown-toggle d-flex align-items-center justify-content-center" id="bs-theme" type="button" aria-expanded="false" data-bs-toggle="dropdown" data-bs-display="static">
+                  <span class="theme-icon-active d-flex align-items-center">
+                    <span class="material-symbols-rounded align-middle fs-4"></span>
+                  </span>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="bs-theme" style="--bs-dropdown-min-width: 9rem;">
+                  <li class="mb-1">
+                    <button type="button" class="dropdown-item d-flex align-items-center active" data-bs-theme-value="light">
+                      <span class="theme-icon d-flex align-items-center">
+                        <span class="material-symbols-rounded fs-4 align-middle me-2">
+                          lightbulb
+                        </span>
+                      </span>
+                      Light
+                    </button>
+                  </li>
+                  <li class="mb-1">
+                    <button type="button" class="dropdown-item d-flex align-items-center" data-bs-theme-value="dark">
+                      <span class="theme-icon d-flex align-items-center">
+                        <span class="material-symbols-rounded fs-4 align-middle me-2">
+                          dark_mode
+                        </span>
+                      </span>
+                      Dark
+                    </button>
+                  </li>
+                  <li>
+                    <button type="button" class="dropdown-item d-flex align-items-center" data-bs-theme-value="auto">
+                      <span class="theme-icon d-flex align-items-center">
+                        <span class="material-symbols-rounded fs-4 align-middle me-2">
+                          invert_colors
+                        </span>
+                      </span>
+                      Auto
+                    </button>
+                  </li>
+                </ul>
+              </li>
+              <li class="nav-item dropdown d-flex align-items-center justify-content-center flex-column h-100">
+                <a href="#offcanvas_user"
+                  class="nav-link height-40 px-2 d-flex align-items-center justify-content-center"
+                  aria-expanded="false" data-bs-toggle="offcanvas">
+                  <div class="d-flex align-items-center">
+                    <div class="avatar-status status-online me-sm-2 avatar xs">
+                      <span class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center w-100 h-100">
+                        <span class="material-symbols-rounded fs-6">person</span>
+                      </span>
+                    </div>
+                    <span class="d-none d-md-inline-block">{{ username }}</span>
+                  </div>
+                </a>
+              </li>
+              <li class="nav-item dropdown ms-1 d-flex d-lg-none align-items-center justify-content-center flex-column h-100">
+                <a href="#" class="nav-link sidebar-trigger-lg-down size-40 p-0 d-flex align-items-center justify-content-center">
+                  <span class="material-symbols-rounded fs-3 align-middle">menu</span>
+                </a>
+              </li>
+            </ul>
+          </header>
+
+          <!--User offcanvas-->
+          <div class="offcanvas offcanvas-end border-0" style="--bs-offcanvas-width: 290px;" id="offcanvas_user">
+            <div class="offcanvas-body p-0">
+              <div class="position-relative overflow-hidden offcanvas-header px-3 pt-6 pb-10 bg-body-secondary">
+                <svg style="transform: rotate(-180deg);color:var(--bs-offcanvas-bg)" preserveAspectRatio="none"
+                  class="position-absolute start-0 bottom-0 w-100" fill="currentColor" height="24" viewBox="0 0 1200 120"
+                  xmlns="http://www.w3.org/2000/svg">
+                  <path d="M0 0v46.29c47.79 22.2 103.59 32.17 158 28 70.36-5.37 136.33-33.31 206.8-37.5 73.84-4.36 147.54 16.88 218.2 35.26 69.27 18 138.3 24.88 209.4 13.08 36.15-6 69.85-17.84 104.45-29.34C989.49 25 1113-14.29 1200 52.47V0z" opacity=".25" />
+                  <path d="M0 0v15.81c13 21.11 27.64 41.05 47.69 56.24C99.41 111.27 165 111 224.58 91.58c31.15-10.15 60.09-26.07 89.67-39.8 40.92-19 84.73-46 130.83-49.67 36.26-2.85 70.9 9.42 98.6 31.56 31.77 25.39 62.32 62 103.63 73 40.44 10.79 81.35-6.69 119.13-24.28s75.16-39 116.92-43.05c59.73-5.85 113.28 22.88 168.9 38.84 30.2 8.66 59 6.17 87.09-7.5 22.43-10.89 48-26.93 60.65-49.24V0z" opacity=".5" />
+                  <path d="M0 0v5.63C149.93 59 314.09 71.32 475.83 42.57c43-7.64 84.23-20.12 127.61-26.46 59-8.63 112.48 12.24 165.56 35.4C827.93 77.22 886 95.24 951.2 90c86.53-7 172.46-45.71 248.8-84.81V0z" />
+                </svg>
+                <div class="position-relative flex-grow-1">
+                  <div>
+                    <div class="flex-shrink-0 me-3">
+                      <span class="rounded-circle shadow width-60 d-block mx-auto bg-primary text-white d-flex align-items-center justify-content-center" style="width:60px;height:60px;">
+                        <span class="material-symbols-rounded fs-2">person</span>
+                      </span>
+                    </div>
+                    <div class="text-center pt-4">
+                      <h5 class="mb-1">{{ fullName }}</h5>
+                      <p class="text-body-tertiary mb-0 lh-1">@{{ username }}</p>
+                    </div>
+                  </div>
+                </div>
+                <button type="button" class="btn btn-sm px-2 btn-white position-absolute end-0 top-0 me-2 mt-2" data-bs-dismiss="offcanvas">
+                  <span class="material-symbols-rounded fs-5 align-middle">close</span>
+                </button>
+              </div>
+              <div class="list-group rounded-0 px-3 py-4 gap-1">
+                <div class="list-group-item-action rounded px-2 py-1 d-flex align-items-center">
+                  <span class="material-symbols-rounded align-middle me-2 size-30 fs-4 d-flex align-items-center justify-content-center text-primary">
+                    mail
+                  </span>
+                  <span class="flex-grow-1 small text-truncate">{{ email }}</span>
+                </div>
+                {{#if isAdmin}}
+                <a href="/admin" class="list-group-item-action rounded px-2 py-1 d-flex align-items-center">
+                  <span class="material-symbols-rounded align-middle me-2 size-30 fs-4 d-flex align-items-center justify-content-center text-primary">
+                    shield_person
+                  </span>
+                  <span class="flex-grow-1">Admin Area</span>
+                </a>
+                {{/if}}
+              </div>
+            </div>
+            <div class="offcanvas-footer border-top rounded-0 list-group p-3">
+              <a href="/logout" class="list-group-item-action rounded px-2 py-1 d-flex align-items-center">
+                <span class="material-symbols-rounded align-middle me-2 size-30 fs-4 d-flex align-items-center justify-content-center text-primary">
+                  logout
+                </span>
+                <span class="flex-grow-1">Logout</span>
+              </a>
+            </div>
+          </div>
+
+          {{{ body }}}
+
+          <footer class="py-2 px-3 px-lg-6">
+            <div class="container-fluid px-0">
+              <span class="d-block lh-sm small text-body-secondary text-end">&copy; {{ year }}. Copyright</span>
+            </div>
+          </footer>
+
+        </main>
+      </div>
+    </div>
+
+    <!--Theme core script-->
+    <script src="/admin-assets/js/theme.bundle.min.js"></script>
+    {{#each pageScripts}}
+    <script src="{{this}}"></script>
+    {{/each}}
+  </body>
+
+</html>

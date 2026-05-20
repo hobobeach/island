@@ -55,3 +55,26 @@ export function requireAuth(
     },
   )(request, response, next);
 }
+
+/**
+ * Soft-auth middleware: attaches `request.user` if a valid JWT is present
+ * (Authorization header or session cookie), otherwise continues anonymously
+ * without redirecting. Use on routes that render different content for
+ * logged-in vs. logged-out visitors (e.g. the home page).
+ */
+export function optionalAuth(
+  request: Request,
+  response: Response,
+  next: NextFunction,
+): void {
+  passport.authenticate(
+    'jwt',
+    { session: false },
+    (_error: unknown, user: Express.User | false | null): void => {
+      if (user) {
+        request.user = user;
+      }
+      next();
+    },
+  )(request, response, next);
+}
