@@ -1,0 +1,77 @@
+<!--//Page Toolbar//-->
+<div class="toolbar px-3 px-lg-6 pt-3 pb-3">
+  <div class="position-relative container-fluid px-0">
+    <div class="row align-items-center position-relative">
+      <div class="col-sm-7 mb-3 mb-sm-0">
+        <h3 class="mb-2 fw-normal">Users</h3>
+        <p class="mb-0">{{ totalCount }} total &middot; {{ adminCount }} admins &middot; {{ paidCount }} paid</p>
+      </div>
+    </div>
+  </div>
+</div>
+<!--//Page Toolbar End//-->
+
+<!--//Page content//-->
+<div class="content px-3 px-lg-6 pt-3 pb-0 d-flex flex-column-fluid position-relative">
+  <div class="container-fluid px-0">
+
+    <div class="card overflow-hidden">
+      <div class="card-body p-0">
+        {{#if users.length}}
+        <div class="table-responsive">
+          <table class="table table-hover align-middle mb-0">
+            <thead>
+              <tr>
+                <th class="ps-3 ps-lg-6">Name</th>
+                <th>Username</th>
+                <th>Email</th>
+                <th>IP</th>
+                <th>Joined</th>
+                <th>Admin</th>
+                <th class="pe-3 pe-lg-6">Payment</th>
+              </tr>
+            </thead>
+            <tbody>
+              {{#each users}}
+              <tr>
+                <td class="ps-3 ps-lg-6 fw-semibold">{{ fullName }}</td>
+                <td>{{ username }}</td>
+                <td>{{ email }}</td>
+                <td><span class="font-monospace small">{{ ip }}</span></td>
+                <td class="small text-body-secondary text-nowrap">{{ joinedAt }}</td>
+                <td>
+                  {{#if isAdmin}}
+                  <span class="badge text-bg-primary">Admin</span>
+                  {{else}}
+                  <span class="text-body-secondary">&mdash;</span>
+                  {{/if}}
+                </td>
+                <td class="pe-3 pe-lg-6">
+                  {{#if isAdmin}}
+                  <span class="text-body-secondary" title="Admins are payment-exempt">&mdash;</span>
+                  {{else}}
+                  {{#if hasPaid}}
+                  <span class="badge text-bg-success" title="{{ stripeRef }}">Paid</span>
+                  {{#if paidAt}}<div class="small text-body-secondary mt-1">{{ paidAt }}</div>{{/if}}
+                  {{else}}
+                  <span class="badge text-bg-warning">Unpaid</span>
+                  {{/if}}
+                  {{/if}}
+                </td>
+              </tr>
+              {{/each}}
+            </tbody>
+          </table>
+        </div>
+        {{else}}
+        <div class="text-center text-body-secondary py-6">
+          <span class="material-symbols-rounded fs-1 d-block mb-2 opacity-50">group</span>
+          No users yet.
+        </div>
+        {{/if}}
+      </div>
+    </div>
+
+  </div>
+</div>
+<!--//Page content End//-->

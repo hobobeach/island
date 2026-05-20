@@ -44,6 +44,47 @@ function asString(value: unknown): string {
   return typeof value === 'string' ? value : '';
 }
 
+const JOINED_DATE_FMT = new Intl.DateTimeFormat('en-US', {
+  month: 'long',
+  day: 'numeric',
+  year: 'numeric',
+});
+const JOINED_RTF = new Intl.RelativeTimeFormat('en', { numeric: 'auto' });
+
+/**
+ * Friendly Joined-column format, e.g. "May 17, 2026 at 2:30pm (5 days ago)".
+ * Times are in the server's local timezone (UTC in production on Render).
+ */
+function formatJoined(date: Date): string {
+  const datePart = JOINED_DATE_FMT.format(date);
+
+  const hours = date.getHours();
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+  const hour12 = hours % 12 === 0 ? 12 : hours % 12;
+  const meridiem = hours >= 12 ? 'pm' : 'am';
+  const timePart = `${hour12}:${minutes}${meridiem}`;
+
+  const diffMs = date.getTime() - Date.now();
+  const abs = Math.abs(diffMs);
+  const round = (value: number): number => Math.round(value);
+  let rel: string;
+  if (abs < 60_000) {
+    rel = JOINED_RTF.format(round(diffMs / 1000), 'second');
+  } else if (abs < 3_600_000) {
+    rel = JOINED_RTF.format(round(diffMs / 60_000), 'minute');
+  } else if (abs < 86_400_000) {
+    rel = JOINED_RTF.format(round(diffMs / 3_600_000), 'hour');
+  } else if (abs < 86_400_000 * 30) {
+    rel = JOINED_RTF.format(round(diffMs / 86_400_000), 'day');
+  } else if (abs < 86_400_000 * 365) {
+    rel = JOINED_RTF.format(round(diffMs / (86_400_000 * 30)), 'month');
+  } else {
+    rel = JOINED_RTF.format(round(diffMs / (86_400_000 * 365)), 'year');
+  }
+
+  return `${datePart} at ${timePart} (${rel})`;
+}
+
 adminRouter.get('/', (_request: Request, response: Response): void => {
   response.render('admin', {
     ...config,
@@ -293,6 +334,47 @@ adminRouter.post('/invites/:id/reject', async (
     await inviteRepo.save(invite);
 
     return flash(response, 'ok', `Rejected the invite request from ${invite.email}.`);
+  } catch (error) {
+    next(error);
+  }
+});
+
+// Read-only users list.
+adminRouter.get('/users', async (
+  _request: Request,
+  response: Response,
+  next: NextFunction,
+): Promise<void> => {
+  try {
+    const all = await AppDataSource.getRepository(User).find({
+      order: { createdAt: 'DESC' },
+    });
+
+    const users = all.map((user) => ({
+      fullName: user.fullName,
+      username: user.username,
+      email: user.email,
+      ip: user.ip ?? '—',
+      joinedAt: formatJoined(user.createdAt),
+      isAdmin: user.isAdmin,
+      hasPaid: user.hasPaid,
+      paidAt: user.paidAt
+        ? user.paidAt.toISOString().slice(0, 16).replace('T', ' ')
+        : null,
+      stripeRef: user.stripePaymentIntentId,
+    }));
+
+    response.render('admin-users', {
+      ...config,
+      layout: 'admin',
+      title: `Users · ${config.name}`,
+      year: new Date().getFullYear(),
+      navUsers: true,
+      users,
+      totalCount: all.length,
+      adminCount: all.filter((user) => user.isAdmin).length,
+      paidCount: all.filter((user) => user.hasPaid && !user.isAdmin).length,
+    });
   } catch (error) {
     next(error);
   }
