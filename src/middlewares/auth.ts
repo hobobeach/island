@@ -1,6 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
 import passport from 'passport';
 
+import { AppDataSource } from '../app-data-source';
+import { User } from '../entities/user.entity';
+
 /**
  * Route guard that admits only authenticated admin users. Authenticates the
  * JWT (Authorization header or session cookie) with the 'jwt' strategy, then:
@@ -75,6 +78,55 @@ export function optionalAuth(
         request.user = user;
       }
       next();
+    },
+  )(request, response, next);
+}
+
+/**
+ * Route guard for the paid member surface (e.g. /discussion). Authenticates
+ * the JWT, loads the User row fresh from the DB (so `hasPaid` reflects state
+ * since the token was issued), then:
+ *
+ *   - no/invalid token / deleted user → redirect to `/login`
+ *   - non-admin who hasn't paid → redirect to `/pay`
+ *   - admin or paid member → attach the full `User` row as `request.user`
+ *
+ * Handlers can read `request.user` as a `User` for fullName/email/etc. without
+ * an additional DB hit.
+ */
+export function requireMember(
+  request: Request,
+  response: Response,
+  next: NextFunction,
+): void {
+  passport.authenticate(
+    'jwt',
+    { session: false },
+    async (error: unknown, payload: Express.User | false | null): Promise<void> => {
+      if (error || !payload) {
+        response.redirect('/login');
+        return;
+      }
+      const id = (payload as { id?: number }).id;
+      if (!id) {
+        response.redirect('/login');
+        return;
+      }
+      try {
+        const user = await AppDataSource.getRepository(User).findOne({ where: { id } });
+        if (!user) {
+          response.redirect('/login');
+          return;
+        }
+        if (!user.isAdmin && !user.hasPaid) {
+          response.redirect('/pay');
+          return;
+        }
+        request.user = user;
+        next();
+      } catch (err) {
+        next(err);
+      }
     },
   )(request, response, next);
 }
