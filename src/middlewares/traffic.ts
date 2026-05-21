@@ -1,14 +1,7 @@
 import { RequestHandler } from 'express';
-import requestIp from 'request-ip';
 import { AppDataSource } from '../app-data-source';
 import { RequestLog } from '../entities/request-log.entity';
-
-// Node's dual-stack socket reports IPv4 peers as IPv4-mapped IPv6
-// (e.g. "::ffff:127.0.0.1"); request-ip preserves that form, so strip it here.
-function normalizeIp(ip: string | null): string | null {
-  if (!ip) return null;
-  return ip.startsWith('::ffff:') ? ip.slice('::ffff:'.length) : ip;
-}
+import { getClientIp } from '../shared/ip';
 
 const enabled = (process.env.TRAFFIC_LOG_ENABLED ?? 'true').toLowerCase() !== 'false';
 const retentionDays = Math.max(0, Number(process.env.TRAFFIC_LOG_RETENTION_DAYS ?? '30'));
@@ -59,7 +52,7 @@ export const trafficLogger: RequestHandler = (request, response, next) => {
       query: queryString,
       status: response.statusCode,
       durationMs: Date.now() - start,
-      ip: normalizeIp(requestIp.getClientIp(request)),
+      ip: getClientIp(request),
       userAgent: request.get('user-agent') ?? null,
       referer: request.get('referer') ?? null,
       contentLength: contentLengthHeader ? Number(contentLengthHeader) : null,

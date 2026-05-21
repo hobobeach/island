@@ -10,7 +10,8 @@
     "dev": "nodemon",
     "invites": "ts-node scripts/invites.ts",
     "create-admin": "ts-node scripts/create-admin.ts",
-    "truncate-tables": "ts-node scripts/truncate-tables.ts"
+    "truncate-tables": "ts-node scripts/truncate-tables.ts",
+    "normalize-ips": "ts-node scripts/normalize-ips.ts"
   },
   "keywords": [],
   "author": "Erik August Johnson <erik@island0.com>",

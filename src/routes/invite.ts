@@ -4,6 +4,7 @@ import { randomUUID } from 'crypto';
 
 import { AppDataSource } from '../app-data-source';
 import { InviteRequest } from '../entities/invite-request.entity';
+import { getClientIp } from '../shared/ip';
 
 export const inviteRouter = express.Router();
 
@@ -44,7 +45,7 @@ inviteRouter.post('/', async (
       uuid: randomUUID(),
       fullName,
       email,
-      ip: request.ip ?? request.socket.remoteAddress ?? null,
+      ip: getClientIp(request),
       userAgent: request.get('user-agent') ?? null,
       referer: request.get('referer') ?? null,
     });
