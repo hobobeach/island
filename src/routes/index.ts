@@ -17,7 +17,7 @@ function renderLanding(response: Response): void {
   response.render('index', {
     ...config,
     isHome: true,
-    title: 'Island: An invite-only online community',
+    title: 'Island: A human-only community',
   });
 }
 

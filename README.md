@@ -1,6 +1,6 @@
 # Island
 
-Island is an invite-only online community aimed at providing an environment free of AI-generated content ("slop"). Strategies to achieve this goal include:
+Island is an invite-only (human-only) online community aimed at providing an environment free of AI-generated content ("slop"). Strategies to achieve this goal include:
 
 - Strict invitation trees
 - Initial signup fee
