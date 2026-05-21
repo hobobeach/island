@@ -3,6 +3,7 @@ import { In } from 'typeorm';
 
 import { config } from '../shared/config';
 import { requireMember } from '../middlewares/auth';
+import { attachKarma } from '../middlewares/karma';
 import { AppDataSource } from '../app-data-source';
 import { Post } from '../entities/post.entity';
 import { Comment } from '../entities/comment.entity';
@@ -14,6 +15,7 @@ import { formatBody, extractDomain } from '../shared/format-text';
 
 export const discussionRouter = express.Router();
 discussionRouter.use(requireMember);
+discussionRouter.use(attachKarma);
 
 const PAGE_SIZE = 30;
 const EDIT_WINDOW_MS = 2 * 60 * 60 * 1000;

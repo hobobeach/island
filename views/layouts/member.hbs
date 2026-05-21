@@ -94,6 +94,21 @@
                       <span class="sidebar-text">Discussion</span>
                     </a>
                   </li>
+                  <li class="nav-item mt-2 sidebar-title text-truncate small opacity-50">
+                    <i class="bi bi-three-dots"></i>
+                    <span class="sidebar-text">You</span>
+                  </li>
+                  <li class="nav-item">
+                    <span class="nav-link d-flex align-items-center text-truncate" data-tippy-content="Karma — net upvotes from other members" data-tippy-placement="right">
+                      <span class="sidebar-icon">
+                        <span class="material-symbols-rounded">star</span>
+                      </span>
+                      <span class="sidebar-text">
+                        Karma
+                        <span class="badge text-bg-warning ms-2">{{ karma }}</span>
+                      </span>
+                    </span>
+                  </li>
                   {{#if isAdmin}}
                   <li class="nav-item mt-2 sidebar-title text-truncate small opacity-50">
                     <i class="bi bi-three-dots"></i>
@@ -190,6 +205,14 @@
                     </button>
                   </li>
                 </ul>
+              </li>
+              <li class="nav-item d-none d-md-flex align-items-center mx-1">
+                <span class="badge text-bg-warning d-inline-flex align-items-center py-2 px-2"
+                  data-tippy-content="Karma — net upvotes from other members"
+                  data-tippy-placement="bottom">
+                  <span class="material-symbols-rounded fs-6 me-1">star</span>
+                  {{ karma }}
+                </span>
               </li>
               <li class="nav-item dropdown d-flex align-items-center justify-content-center flex-column h-100">
                 <a href="#offcanvas_user"

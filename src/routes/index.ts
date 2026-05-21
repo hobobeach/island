@@ -4,6 +4,7 @@ import { AppDataSource } from '../app-data-source';
 import { User } from '../entities/user.entity';
 import { config } from '../shared/config';
 import { optionalAuth } from '../middlewares/auth';
+import { computeKarma } from '../shared/karma';
 
 export const indexRouter = express.Router();
 
@@ -51,6 +52,8 @@ indexRouter.get('/', optionalAuth, async (
       return;
     }
 
+    const karma = await computeKarma(user.id);
+
     response.render('member-dashboard', {
       ...config,
       layout: 'member',
@@ -64,6 +67,7 @@ indexRouter.get('/', optionalAuth, async (
       hasPaid: user.hasPaid,
       joinedAt: JOINED_DATE_FMT.format(user.createdAt),
       paidAt: user.paidAt ? JOINED_DATE_FMT.format(user.paidAt) : null,
+      karma,
     });
   } catch (error) {
     next(error);
