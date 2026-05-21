@@ -1,0 +1,86 @@
+<!--//Page Toolbar//-->
+<div class="toolbar px-3 px-lg-6 pt-3 pb-3">
+  <div class="position-relative container-fluid px-0">
+    <div class="row align-items-center position-relative">
+      <div class="col-sm-7 mb-3 mb-sm-0">
+        <h3 class="mb-2 fw-normal">Request Logs</h3>
+        <p class="mb-0">
+          {{#if isTruncated}}
+          Showing {{ shownCount }} of {{ totalCount }} total &middot; most recent {{ limit }}
+          {{else}}
+          {{ totalCount }} total
+          {{/if}}
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+<!--//Page Toolbar End//-->
+
+<!--//Page content//-->
+<div class="content px-3 px-lg-6 pt-3 pb-0 d-flex flex-column-fluid position-relative">
+  <div class="container-fluid px-0">
+
+    <div class="card overflow-hidden">
+      <div class="card-body p-0">
+        {{#if logs.length}}
+        <div class="table-responsive">
+          <table class="table table-hover align-middle mb-0">
+            <thead>
+              <tr>
+                <th class="ps-3 ps-lg-6">Time</th>
+                <th>Method</th>
+                <th>Path</th>
+                <th>Query</th>
+                <th class="text-end">Status</th>
+                <th class="text-end">Duration</th>
+                <th class="text-end">Size</th>
+                <th>IP</th>
+                <th>Referer</th>
+                <th class="pe-3 pe-lg-6">User Agent</th>
+              </tr>
+            </thead>
+            <tbody>
+              {{#each logs}}
+              <tr>
+                <td class="ps-3 ps-lg-6 small text-body-secondary text-nowrap font-monospace">{{ timestamp }}</td>
+                <td><span class="badge text-bg-{{ methodClass }} font-monospace">{{ method }}</span></td>
+                <td class="font-monospace small" style="max-width: 320px;">
+                  <span class="d-inline-block text-truncate" style="max-width: 320px;" title="{{ path }}">{{ path }}</span>
+                </td>
+                <td class="font-monospace small text-body-secondary" style="max-width: 220px;">
+                  {{#if query}}
+                  <span class="d-inline-block text-truncate" style="max-width: 220px;" title="{{ query }}">{{ query }}</span>
+                  {{else}}
+                  <span class="text-body-tertiary">&mdash;</span>
+                  {{/if}}
+                </td>
+                <td class="text-end"><span class="badge text-bg-{{ statusClass }}">{{ status }}</span></td>
+                <td class="text-end small text-body-secondary text-nowrap">{{ durationMs }} ms</td>
+                <td class="text-end small text-body-secondary text-nowrap">
+                  {{#if contentLength}}{{ contentLength }} B{{else}}<span class="text-body-tertiary">&mdash;</span>{{/if}}
+                </td>
+                <td class="font-monospace small">{{ ip }}</td>
+                <td class="small text-body-secondary" style="max-width: 220px;">
+                  <span class="d-inline-block text-truncate" style="max-width: 220px;" title="{{ referer }}">{{ referer }}</span>
+                </td>
+                <td class="pe-3 pe-lg-6 small text-body-secondary" style="max-width: 280px;">
+                  <span class="d-inline-block text-truncate" style="max-width: 280px;" title="{{ userAgent }}">{{ userAgent }}</span>
+                </td>
+              </tr>
+              {{/each}}
+            </tbody>
+          </table>
+        </div>
+        {{else}}
+        <div class="text-center text-body-secondary py-6">
+          <span class="material-symbols-rounded fs-1 d-block mb-2 opacity-50">receipt_long</span>
+          No request logs yet.
+        </div>
+        {{/if}}
+      </div>
+    </div>
+
+  </div>
+</div>
+<!--//Page content End//-->
