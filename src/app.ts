@@ -27,6 +27,7 @@ import { loginRouter, logoutRouter } from './routes/login';
 import { signupRouter } from './routes/signup';
 import { payRouter } from './routes/pay';
 import { adminRouter } from './routes/admin';
+import { discussionRouter } from './routes/discussion';
 // PLUGIN blog BEGIN
 import { blogRouter } from './routes/blog';
 // PLUGIN blog END
@@ -83,6 +84,7 @@ app.use('/logout', logoutRouter);
 app.use('/signup', signupRouter);
 app.use('/pay', payRouter);
 app.use('/admin', adminRouter);
+app.use('/discussion', discussionRouter);
 app.use('/api/invite', inviteRouter);
 // PLUGIN blog BEGIN
 app.use('/blog', blogRouter);

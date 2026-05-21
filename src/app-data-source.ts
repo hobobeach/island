@@ -6,6 +6,10 @@ import { RequestLog } from './entities/request-log.entity';
 // PLUGIN traffic END
 import { InviteRequest } from './entities/invite-request.entity';
 import { User } from './entities/user.entity';
+import { Post } from './entities/post.entity';
+import { Comment } from './entities/comment.entity';
+import { PostUpvote } from './entities/post-upvote.entity';
+import { CommentUpvote } from './entities/comment-upvote.entity';
 // PLUGINS: data-source-import
 
 // Resolve the SQLite file location. `DATABASE_PATH` (a full path) takes
@@ -28,6 +32,10 @@ export const AppDataSource = new DataSource({
         // PLUGIN traffic END
         InviteRequest,
         User,
+        Post,
+        Comment,
+        PostUpvote,
+        CommentUpvote,
         // PLUGINS: entities
     ],
     logging: true,

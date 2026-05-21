@@ -7,6 +7,7 @@ import { requireAdmin } from '../middlewares/auth';
 import { AppDataSource } from '../app-data-source';
 import { InviteRequest } from '../entities/invite-request.entity';
 import { User } from '../entities/user.entity';
+import { RequestLog } from '../entities/request-log.entity';
 import { sendInviteEmail } from '../shared/mailer';
 
 export const adminRouter = express.Router();
@@ -334,6 +335,72 @@ adminRouter.post('/invites/:id/reject', async (
     await inviteRepo.save(invite);
 
     return flash(response, 'ok', `Rejected the invite request from ${invite.email}.`);
+  } catch (error) {
+    next(error);
+  }
+});
+
+// Read-only request log — newest first, capped to the most recent N rows.
+const REQUEST_LOG_LIMIT = 500;
+
+function statusClass(status: number): string {
+  if (status >= 500) return 'danger';
+  if (status >= 400) return 'warning';
+  if (status >= 300) return 'info';
+  if (status >= 200) return 'success';
+  return 'secondary';
+}
+
+function methodClass(method: string): string {
+  switch (method.toUpperCase()) {
+    case 'GET': return 'secondary';
+    case 'POST': return 'primary';
+    case 'PUT': return 'info';
+    case 'PATCH': return 'warning';
+    case 'DELETE': return 'danger';
+    default: return 'secondary';
+  }
+}
+
+adminRouter.get('/logs', async (
+  _request: Request,
+  response: Response,
+  next: NextFunction,
+): Promise<void> => {
+  try {
+    const repo = AppDataSource.getRepository(RequestLog);
+    const [rows, totalCount] = await repo.findAndCount({
+      order: { createdAt: 'DESC' },
+      take: REQUEST_LOG_LIMIT,
+    });
+
+    const logs = rows.map((row) => ({
+      timestamp: row.createdAt.toISOString().slice(0, 19).replace('T', ' '),
+      method: row.method,
+      methodClass: methodClass(row.method),
+      path: row.path,
+      query: row.query,
+      status: row.status,
+      statusClass: statusClass(row.status),
+      durationMs: row.durationMs,
+      ip: row.ip ?? '—',
+      userAgent: row.userAgent ?? '—',
+      referer: row.referer ?? '—',
+      contentLength: row.contentLength,
+    }));
+
+    response.render('admin-logs', {
+      ...config,
+      layout: 'admin',
+      title: `Request Logs · ${config.name}`,
+      year: new Date().getFullYear(),
+      navLogs: true,
+      logs,
+      shownCount: logs.length,
+      totalCount,
+      limit: REQUEST_LOG_LIMIT,
+      isTruncated: totalCount > logs.length,
+    });
   } catch (error) {
     next(error);
   }

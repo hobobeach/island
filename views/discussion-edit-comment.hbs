@@ -1,0 +1,43 @@
+<div class="toolbar px-3 px-lg-6 pt-3 pb-3">
+  <div class="position-relative container-fluid px-0">
+    {{#if isReply}}
+      <h3 class="mb-2 fw-normal">Reply</h3>
+    {{else}}
+      <h3 class="mb-2 fw-normal">Edit comment</h3>
+      <p class="mb-0 text-body-secondary">You can edit within 2 hours of posting.</p>
+    {{/if}}
+  </div>
+</div>
+
+<div class="content px-3 px-lg-6 pt-3 pb-0 d-flex flex-column-fluid position-relative">
+  <div class="container-fluid px-0" style="max-width: 760px;">
+    {{#if error}}<div class="alert alert-danger py-2">{{error}}</div>{{/if}}
+
+    {{#if replyingTo}}
+      <div class="card mb-3 bg-body-secondary">
+        <div class="card-body py-2 px-3 small">
+          <div class="text-body-secondary mb-1"><strong>{{replyingTo.authorUsername}}</strong></div>
+          <div>{{{replyingTo.bodyHtml}}}</div>
+        </div>
+      </div>
+    {{/if}}
+
+    <div class="card">
+      <div class="card-body">
+        <form action="{{action}}" method="post">
+          {{#if parentId}}
+            <input type="hidden" name="parentId" value="{{parentId}}">
+          {{/if}}
+          <div class="mb-3">
+            <label for="comment-body" class="form-label">Comment</label>
+            <textarea class="form-control" id="comment-body" name="body" rows="6" maxlength="8000" required autofocus>{{formBody}}</textarea>
+          </div>
+          <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-primary">{{#if isReply}}Post reply{{else}}Save changes{{/if}}</button>
+            <a href="{{cancelHref}}" class="btn btn-outline-secondary">Cancel</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
