@@ -15,13 +15,13 @@ export const adminRouter = express.Router();
 // Every admin route requires an authenticated admin.
 adminRouter.use(requireAdmin);
 
-// Dashboard-only vendor scripts, loaded after the layout's core bundle.
-const DASHBOARD_SCRIPTS = [
-  '/admin-assets/vendor/moment.min.js',
-  '/admin-assets/vendor/daterangepicker.js',
-  '/admin-assets/vendor/apexcharts.min.js',
-  '/admin-assets/js/dashboard-init.js',
-];
+// Expose the current admin's username to every admin view (the layout uses it
+// for the header dropdown), so individual route handlers don't have to pass it.
+adminRouter.use((request: Request, response: Response, next: NextFunction): void => {
+  const user = request.user as { username?: string } | undefined;
+  response.locals.adminUsername = user?.username ?? '';
+  next();
+});
 
 const STATUS_CLASS: Record<string, string> = {
   pending: 'warning',
@@ -93,7 +93,6 @@ adminRouter.get('/', (_request: Request, response: Response): void => {
     title: `Dashboard · ${config.name}`,
     year: new Date().getFullYear(),
     navDashboard: true,
-    pageScripts: DASHBOARD_SCRIPTS,
   });
 });
 
