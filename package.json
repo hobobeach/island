@@ -9,7 +9,8 @@
     "start": "npm run build && node dist/server.js",
     "dev": "nodemon",
     "invites": "ts-node scripts/invites.ts",
-    "create-admin": "ts-node scripts/create-admin.ts"
+    "create-admin": "ts-node scripts/create-admin.ts",
+    "truncate-tables": "ts-node scripts/truncate-tables.ts"
   },
   "keywords": [],
   "author": "Erik August Johnson <erik@island0.com>",
