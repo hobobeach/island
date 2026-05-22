@@ -37,9 +37,15 @@ import { seoRouter } from './routes/seo';
 // PLUGIN traffic BEGIN
 import { trafficLogger } from './middlewares/traffic';
 // PLUGIN traffic END
+import { globalLimiter } from './middlewares/rate-limit';
 // PLUGINS: import
 
 const app: Express = express();
+
+// Trust exactly one upstream proxy hop (Render's edge), so `req.ip` resolves
+// to the real client IP from X-Forwarded-For. Setting this to `true` would
+// let any upstream spoof the header, which express-rate-limit v8 rejects.
+app.set('trust proxy', 1);
 
 passport.use('jwt', jwtStrategy);
 
@@ -76,6 +82,9 @@ app.use(express.static(path.join(__dirname, '../public')));
 // PLUGIN traffic BEGIN
 app.use(trafficLogger);
 // PLUGIN traffic END
+// Coarse per-IP cap. Sits after the traffic logger so 429 responses are still
+// recorded; static assets are served upstream and bypass it.
+app.use(globalLimiter);
 // PLUGINS: middleware
 
 app.use('/', indexRouter);

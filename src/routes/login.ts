@@ -6,6 +6,7 @@ import { AppDataSource } from '../app-data-source';
 import { User } from '../entities/user.entity';
 import { AUTH_COOKIE } from '../shared/jwt';
 import { issueSession, authCookieOptions } from '../shared/session';
+import { loginLimiter } from '../middlewares/rate-limit';
 
 export const loginRouter = express.Router();
 export const logoutRouter = express.Router();
@@ -30,7 +31,7 @@ loginRouter.get('/', (request: Request, response: Response): void => {
   renderLogin(response, extra);
 });
 
-loginRouter.post('/', async (
+loginRouter.post('/', loginLimiter, async (
   request: Request,
   response: Response,
   next: NextFunction,

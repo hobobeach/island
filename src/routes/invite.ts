@@ -5,12 +5,13 @@ import { randomUUID } from 'crypto';
 import { AppDataSource } from '../app-data-source';
 import { InviteRequest } from '../entities/invite-request.entity';
 import { getClientIp } from '../shared/ip';
+import { inviteLimiter } from '../middlewares/rate-limit';
 
 export const inviteRouter = express.Router();
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-inviteRouter.post('/', async (
+inviteRouter.post('/', inviteLimiter, async (
   request: Request,
   response: Response,
   next: NextFunction
