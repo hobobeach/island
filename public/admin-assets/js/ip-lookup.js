@@ -42,6 +42,70 @@
     return '<dl class="row mb-0">' + rows + '</dl>';
   }
 
+  function abuseScoreClass(score) {
+    if (score >= 51) return 'danger';
+    if (score >= 26) return 'warning';
+    return 'success';
+  }
+
+  function formatAbuseDate(value) {
+    if (!value) return '';
+    var d = new Date(value);
+    if (isNaN(d.getTime())) return String(value);
+    return d.toISOString().slice(0, 19).replace('T', ' ');
+  }
+
+  function renderAbuseSection(payload) {
+    if (payload && payload.errors && payload.errors.length) {
+      return (
+        '<p class="mb-0 small text-body-secondary">' +
+          escapeHtml(payload.errors[0].detail || 'AbuseIPDB returned an error.') +
+        '</p>'
+      );
+    }
+    var data = (payload && payload.data) || {};
+    var score = Number(data.abuseConfidenceScore || 0);
+    var hostnames = (data.hostnames || []).filter(Boolean).join(', ');
+
+    var header =
+      '<div class="d-flex align-items-center mb-3">' +
+        '<span class="badge text-bg-' + abuseScoreClass(score) + ' fs-5 me-3" style="min-width: 60px;">' +
+          escapeHtml(String(score)) + ' / 100' +
+        '</span>' +
+        '<div class="small">' +
+          '<div class="fw-semibold">Abuse confidence</div>' +
+          '<div class="text-body-secondary">' +
+            escapeHtml(String(data.totalReports || 0)) + ' report' + (data.totalReports === 1 ? '' : 's') +
+            ' from ' + escapeHtml(String(data.numDistinctUsers || 0)) + ' user' +
+            (data.numDistinctUsers === 1 ? '' : 's') +
+            ' (last 90 days)' +
+          '</div>' +
+        '</div>' +
+      '</div>';
+
+    var fields = [
+      ['Usage type', data.usageType],
+      ['ISP', data.isp],
+      ['Domain', data.domain],
+      ['Hostnames', hostnames],
+      ['Country', data.countryCode],
+      ['Last reported', formatAbuseDate(data.lastReportedAt)],
+      ['Tor exit node', data.isTor ? 'Yes' : null],
+      ['Whitelisted', data.isWhitelisted ? 'Yes' : null],
+    ];
+    var rows = fields
+      .filter(function (pair) { return pair[1]; })
+      .map(function (pair) {
+        return (
+          '<dt class="col-sm-4 text-body-secondary fw-normal">' + escapeHtml(pair[0]) + '</dt>' +
+          '<dd class="col-sm-8 mb-2">' + escapeHtml(pair[1]) + '</dd>'
+        );
+      })
+      .join('');
+
+    return header + (rows ? '<dl class="row mb-0">' + rows + '</dl>' : '');
+  }
+
   function renderBanControls(ip, isBanned) {
     if (isBanned) {
       return (
@@ -62,10 +126,13 @@
     );
   }
 
-  function renderModal(bodyEl, ip, isBanned, infoHtml) {
+  function renderModal(bodyEl, ip, isBanned, infoHtml, abuseHtml) {
     bodyEl.innerHTML =
       '<h6 class="text-body-secondary text-uppercase small mb-2">Geolocation</h6>' +
       '<div class="js-info-section mb-3">' + infoHtml + '</div>' +
+      '<hr class="my-3">' +
+      '<h6 class="text-body-secondary text-uppercase small mb-2">Abuse (AbuseIPDB)</h6>' +
+      '<div class="js-abuse-section mb-3">' + abuseHtml + '</div>' +
       '<hr class="my-3">' +
       '<h6 class="text-body-secondary text-uppercase small mb-2">Ban</h6>' +
       '<div class="js-ban-section">' + renderBanControls(ip, isBanned) + '</div>';
@@ -117,9 +184,10 @@
       var isBanned = trigger.getAttribute('data-banned') === '1';
 
       titleEl.textContent = 'IP Address: ' + ip;
-      renderModal(bodyEl, ip, isBanned, loadingMarkup());
+      renderModal(bodyEl, ip, isBanned, loadingMarkup(), loadingMarkup());
       modal.show();
 
+      // Geolocation (ipinfo)
       fetch('/admin/ip-lookup?ip=' + encodeURIComponent(ip), {
         headers: { 'Accept': 'application/json' },
         credentials: 'same-origin',
@@ -142,6 +210,34 @@
           var infoSection = bodyEl.querySelector('.js-info-section');
           if (infoSection) {
             infoSection.innerHTML = errorMarkup('Network error — could not reach the lookup endpoint.');
+          }
+        });
+
+      // Abuse (AbuseIPDB) — runs in parallel.
+      fetch('/admin/abuse-lookup?ip=' + encodeURIComponent(ip), {
+        headers: { 'Accept': 'application/json' },
+        credentials: 'same-origin',
+      })
+        .then(function (response) {
+          return response.json().then(function (payload) {
+            return { ok: response.ok, payload: payload };
+          });
+        })
+        .then(function (result) {
+          var abuseSection = bodyEl.querySelector('.js-abuse-section');
+          if (!abuseSection) return;
+          // 4xx with an `errors` array (e.g. private IP) renders inline as a
+          // friendly note; anything else with an `error` string is shown too.
+          if (!result.ok && result.payload && !result.payload.errors) {
+            abuseSection.innerHTML = errorMarkup((result.payload && result.payload.error) || 'Lookup failed.');
+            return;
+          }
+          abuseSection.innerHTML = renderAbuseSection(result.payload);
+        })
+        .catch(function () {
+          var abuseSection = bodyEl.querySelector('.js-abuse-section');
+          if (abuseSection) {
+            abuseSection.innerHTML = errorMarkup('Network error — could not reach the abuse endpoint.');
           }
         });
     });

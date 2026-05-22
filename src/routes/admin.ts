@@ -449,6 +449,38 @@ adminRouter.get('/ip-lookup', async (
   }
 });
 
+// Proxy a single IP lookup to AbuseIPDB. Already behind requireAdmin via the
+// router-wide guard. Returns the raw AbuseIPDB payload on success
+// (`{ data: {...} }`); errors come back as `{ errors: [...] }` from the
+// upstream (e.g. for private IPs) and are forwarded with a 4xx status.
+adminRouter.get('/abuse-lookup', async (
+  request: Request,
+  response: Response,
+): Promise<void> => {
+  const ip = typeof request.query.ip === 'string' ? request.query.ip.trim() : '';
+  if (!ip || !IP_PATTERN.test(ip)) {
+    response.status(400).json({ error: 'Missing or invalid ip parameter.' });
+    return;
+  }
+
+  const token = process.env.ABUSEIPDB_KEY;
+  if (!token) {
+    response.status(500).json({ error: 'Abuse lookup is not configured.' });
+    return;
+  }
+
+  try {
+    const upstream = await fetch(
+      `https://api.abuseipdb.com/api/v2/check?ipAddress=${encodeURIComponent(ip)}&maxAgeInDays=90`,
+      { headers: { Key: token, Accept: 'application/json' } },
+    );
+    const payload = await upstream.json();
+    response.status(upstream.ok ? 200 : upstream.status).json(payload);
+  } catch (_error) {
+    response.status(502).json({ error: 'Failed to reach abuseipdb.com.' });
+  }
+});
+
 const MAX_BAN_REASON_LEN = 500;
 
 // `true` when the caller wants JSON (fetch from the modal), `false` for plain
