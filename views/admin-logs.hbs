@@ -60,7 +60,13 @@
                 <td class="text-end small text-body-secondary text-nowrap">
                   {{#if contentLength}}{{ contentLength }} B{{else}}<span class="text-body-tertiary">&mdash;</span>{{/if}}
                 </td>
-                <td class="font-monospace small">{{ ip }}</td>
+                <td class="font-monospace small">
+                  {{#if ip}}
+                  <a href="#" class="text-reset text-decoration-underline" data-ip="{{ ip }}">{{ ip }}</a>
+                  {{else}}
+                  <span class="text-body-tertiary">&mdash;</span>
+                  {{/if}}
+                </td>
                 <td class="small text-body-secondary" style="max-width: 220px;">
                   <span class="d-inline-block text-truncate" style="max-width: 220px;" title="{{ referer }}">{{ referer }}</span>
                 </td>
@@ -84,3 +90,19 @@
   </div>
 </div>
 <!--//Page content End//-->
+
+<!--IP lookup modal — populated by /admin-assets/js/ip-lookup.js-->
+<div class="modal fade" id="ipLookupModal" tabindex="-1" aria-labelledby="ipLookupModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="ipLookupModalLabel">IP Address</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body"></div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>

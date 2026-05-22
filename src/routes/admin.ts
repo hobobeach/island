@@ -382,7 +382,7 @@ adminRouter.get('/logs', async (
       status: row.status,
       statusClass: statusClass(row.status),
       durationMs: row.durationMs,
-      ip: row.ip ?? '—',
+      ip: row.ip,
       userAgent: row.userAgent ?? '—',
       referer: row.referer ?? '—',
       contentLength: row.contentLength,
@@ -399,9 +399,45 @@ adminRouter.get('/logs', async (
       totalCount,
       limit: REQUEST_LOG_LIMIT,
       isTruncated: totalCount > logs.length,
+      pageScripts: ['/admin-assets/js/ip-lookup.js'],
     });
   } catch (error) {
     next(error);
+  }
+});
+
+// IPv4 (incl. ::ffff:-mapped) or IPv6, anchored — anything funky won't reach ipinfo.
+const IP_PATTERN = /^(?:::ffff:)?(?:\d{1,3}\.){3}\d{1,3}$|^[0-9a-fA-F:]+$/;
+
+// Proxy a single IP lookup to ipinfo.io. Already behind requireAdmin via the
+// router-wide guard. Returns the raw ipinfo payload on success.
+adminRouter.get('/ip-lookup', async (
+  request: Request,
+  response: Response,
+): Promise<void> => {
+  const ip = typeof request.query.ip === 'string' ? request.query.ip.trim() : '';
+  if (!ip || !IP_PATTERN.test(ip)) {
+    response.status(400).json({ error: 'Missing or invalid ip parameter.' });
+    return;
+  }
+
+  const token = process.env.IPINFO_KEY;
+  if (!token) {
+    response.status(500).json({ error: 'IP lookup is not configured.' });
+    return;
+  }
+
+  try {
+    const upstream = await fetch(
+      `https://ipinfo.io/${encodeURIComponent(ip)}?token=${encodeURIComponent(token)}`,
+    );
+    if (!upstream.ok) {
+      response.status(upstream.status).json({ error: `ipinfo.io returned ${upstream.status}` });
+      return;
+    }
+    response.json(await upstream.json());
+  } catch (_error) {
+    response.status(502).json({ error: 'Failed to reach ipinfo.io.' });
   }
 });
 
