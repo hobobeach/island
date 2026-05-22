@@ -38,6 +38,7 @@ import { seoRouter } from './routes/seo';
 import { trafficLogger } from './middlewares/traffic';
 // PLUGIN traffic END
 import { globalLimiter } from './middlewares/rate-limit';
+import { blockBannedIps } from './middlewares/block-banned-ips';
 // PLUGINS: import
 
 const app: Express = express();
@@ -82,6 +83,9 @@ app.use(express.static(path.join(__dirname, '../public')));
 // PLUGIN traffic BEGIN
 app.use(trafficLogger);
 // PLUGIN traffic END
+// Reject banned IPs *after* the traffic logger registers its finish listener
+// so 403 responses are still recorded in request_logs.
+app.use(blockBannedIps);
 // Coarse per-IP cap. Sits after the traffic logger so 429 responses are still
 // recorded; static assets are served upstream and bypass it.
 app.use(globalLimiter);

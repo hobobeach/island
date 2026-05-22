@@ -1,11 +1,13 @@
 import app from './app';
 import { AppDataSource } from './app-data-source';
 import { log, logWarning } from './shared/log';
+import { init as initBannedIpCache } from './shared/banned-ip-cache';
 
 const port = process.env.PORT || 3000;
 
 async function startServer() {
   await AppDataSource.initialize();
+  await initBannedIpCache();
   // PLUGINS: init
 
   const server = app.listen(port, () => {

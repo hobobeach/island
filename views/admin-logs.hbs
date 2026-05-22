@@ -62,7 +62,8 @@
                 </td>
                 <td class="font-monospace small">
                   {{#if ip}}
-                  <a href="#" class="text-reset text-decoration-underline" data-ip="{{ ip }}">{{ ip }}</a>
+                  <a href="#" class="text-reset text-decoration-underline" data-ip="{{ ip }}" data-banned="{{#if isBanned}}1{{else}}0{{/if}}">{{ ip }}</a>
+                  {{#if isBanned}}<span class="badge text-bg-danger ms-1" title="Banned">banned</span>{{/if}}
                   {{else}}
                   <span class="text-body-tertiary">&mdash;</span>
                   {{/if}}

@@ -8,7 +8,9 @@ import { AppDataSource } from '../app-data-source';
 import { InviteRequest } from '../entities/invite-request.entity';
 import { User } from '../entities/user.entity';
 import { RequestLog } from '../entities/request-log.entity';
+import { BannedIp } from '../entities/banned-ip.entity';
 import { sendInviteEmail } from '../shared/mailer';
+import { rememberBan, forgetBan } from '../shared/banned-ip-cache';
 
 export const adminRouter = express.Router();
 
@@ -373,6 +375,11 @@ adminRouter.get('/logs', async (
       take: REQUEST_LOG_LIMIT,
     });
 
+    const bannedIpSet = new Set(
+      (await AppDataSource.getRepository(BannedIp).find({ select: { ip: true } }))
+        .map((b) => b.ip),
+    );
+
     const logs = rows.map((row) => ({
       timestamp: row.createdAt.toISOString().slice(0, 19).replace('T', ' '),
       method: row.method,
@@ -383,6 +390,7 @@ adminRouter.get('/logs', async (
       statusClass: statusClass(row.status),
       durationMs: row.durationMs,
       ip: row.ip,
+      isBanned: row.ip ? bannedIpSet.has(row.ip) : false,
       userAgent: row.userAgent ?? '—',
       referer: row.referer ?? '—',
       contentLength: row.contentLength,
@@ -438,6 +446,137 @@ adminRouter.get('/ip-lookup', async (
     response.json(await upstream.json());
   } catch (_error) {
     response.status(502).json({ error: 'Failed to reach ipinfo.io.' });
+  }
+});
+
+const MAX_BAN_REASON_LEN = 500;
+
+// `true` when the caller wants JSON (fetch from the modal), `false` for plain
+// HTML form posts on the listing page — drives redirect-vs-JSON below.
+function wantsJson(request: Request): boolean {
+  return request.is('json') !== false || request.accepts(['html', 'json']) === 'json';
+}
+
+function flashTo(response: Response, key: 'ok' | 'error', message: string): void {
+  response.redirect(`/admin/banned-ips?${key}=${encodeURIComponent(message)}`);
+}
+
+// Ban an IP. Idempotent — re-banning an already-banned IP is a no-op. Updates
+// the in-memory cache so the next request from this IP is blocked.
+adminRouter.post('/banned-ips', async (
+  request: Request,
+  response: Response,
+  next: NextFunction,
+): Promise<void> => {
+  try {
+    const ip = typeof request.body?.ip === 'string' ? request.body.ip.trim() : '';
+    if (!ip || !IP_PATTERN.test(ip)) {
+      if (wantsJson(request)) {
+        response.status(400).json({ error: 'Missing or invalid ip.' });
+      } else {
+        flashTo(response, 'error', 'Missing or invalid IP.');
+      }
+      return;
+    }
+    const rawReason = typeof request.body?.reason === 'string' ? request.body.reason.trim() : '';
+    const reason = rawReason.length > 0 ? rawReason.slice(0, MAX_BAN_REASON_LEN) : null;
+
+    const admin = request.user as { id?: number } | undefined;
+    const repo = AppDataSource.getRepository(BannedIp);
+
+    const existing = await repo.findOne({ where: { ip } });
+    if (existing) {
+      if (wantsJson(request)) {
+        response.json({ status: 'already_banned', ip, reason: existing.reason });
+      } else {
+        flashTo(response, 'ok', `${ip} was already banned.`);
+      }
+      return;
+    }
+
+    const row = repo.create({
+      ip,
+      reason,
+      bannedBy: admin?.id ? ({ id: admin.id } as User) : null,
+    });
+    await repo.save(row);
+    rememberBan(ip);
+
+    if (wantsJson(request)) {
+      response.status(201).json({ status: 'banned', ip, reason });
+    } else {
+      flashTo(response, 'ok', `Banned ${ip}.`);
+    }
+  } catch (error) {
+    next(error);
+  }
+});
+
+// Unban by IP — accepts the IP in the body so the URL stays clean.
+adminRouter.post('/banned-ips/unban', async (
+  request: Request,
+  response: Response,
+  next: NextFunction,
+): Promise<void> => {
+  try {
+    const ip = typeof request.body?.ip === 'string' ? request.body.ip.trim() : '';
+    if (!ip || !IP_PATTERN.test(ip)) {
+      if (wantsJson(request)) {
+        response.status(400).json({ error: 'Missing or invalid ip.' });
+      } else {
+        flashTo(response, 'error', 'Missing or invalid IP.');
+      }
+      return;
+    }
+
+    const repo = AppDataSource.getRepository(BannedIp);
+    const result = await repo.delete({ ip });
+    forgetBan(ip);
+
+    if (wantsJson(request)) {
+      response.json({ status: 'unbanned', ip, removed: result.affected ?? 0 });
+    } else {
+      flashTo(response, 'ok', `Unbanned ${ip}.`);
+    }
+  } catch (error) {
+    next(error);
+  }
+});
+
+// HTML listing page for review and unbanning.
+adminRouter.get('/banned-ips', async (
+  request: Request,
+  response: Response,
+  next: NextFunction,
+): Promise<void> => {
+  try {
+    const rows = await AppDataSource.getRepository(BannedIp).find({
+      relations: ['bannedBy'],
+      order: { createdAt: 'DESC' },
+    });
+
+    const bans = rows.map((row) => ({
+      id: row.id,
+      ip: row.ip,
+      reason: row.reason,
+      bannedByUsername: row.bannedBy?.username ?? null,
+      createdAt: row.createdAt.toISOString().slice(0, 19).replace('T', ' '),
+    }));
+
+    response.render('admin-banned-ips', {
+      ...config,
+      layout: 'admin',
+      title: `Banned IPs · ${config.name}`,
+      year: new Date().getFullYear(),
+      navBannedIps: true,
+      bans,
+      totalCount: bans.length,
+      notice: asString(request.query.ok) || undefined,
+      error: asString(request.query.error) || undefined,
+      pageScripts: ['/admin-assets/js/ip-lookup.js'],
+    });
+  } catch (error) {
+    next(error);
   }
 });
 

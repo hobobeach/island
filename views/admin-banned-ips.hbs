@@ -1,0 +1,89 @@
+<!--//Page Toolbar//-->
+<div class="toolbar px-3 px-lg-6 pt-3 pb-3">
+  <div class="position-relative container-fluid px-0">
+    <div class="row align-items-center position-relative">
+      <div class="col-sm-7 mb-3 mb-sm-0">
+        <h3 class="mb-2 fw-normal">Banned IPs</h3>
+        <p class="mb-0">{{ totalCount }} total</p>
+      </div>
+    </div>
+  </div>
+</div>
+<!--//Page Toolbar End//-->
+
+<!--//Page content//-->
+<div class="content px-3 px-lg-6 pt-3 pb-0 d-flex flex-column-fluid position-relative">
+  <div class="container-fluid px-0">
+
+    {{#if notice}}<div class="alert alert-success">{{ notice }}</div>{{/if}}
+    {{#if error}}<div class="alert alert-warning">{{ error }}</div>{{/if}}
+
+    <div class="card overflow-hidden">
+      <div class="card-body p-0">
+        {{#if bans.length}}
+        <div class="table-responsive">
+          <table class="table table-hover align-middle mb-0">
+            <thead>
+              <tr>
+                <th class="ps-3 ps-lg-6">IP</th>
+                <th>Reason</th>
+                <th>Banned by</th>
+                <th>When</th>
+                <th class="pe-3 pe-lg-6 text-end">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {{#each bans}}
+              <tr>
+                <td class="ps-3 ps-lg-6 font-monospace small">
+                  <a href="#" class="text-reset text-decoration-underline" data-ip="{{ ip }}">{{ ip }}</a>
+                </td>
+                <td class="small">
+                  {{#if reason}}{{ reason }}{{else}}<span class="text-body-tertiary">&mdash;</span>{{/if}}
+                </td>
+                <td class="small">
+                  {{#if bannedByUsername}}@{{ bannedByUsername }}{{else}}<span class="text-body-tertiary">&mdash;</span>{{/if}}
+                </td>
+                <td class="small text-body-secondary text-nowrap font-monospace">{{ createdAt }}</td>
+                <td class="pe-3 pe-lg-6 text-end">
+                  <form method="post" action="/admin/banned-ips/unban" class="d-inline">
+                    <input type="hidden" name="ip" value="{{ ip }}">
+                    <button type="submit" class="btn btn-sm btn-outline-secondary">
+                      <span class="material-symbols-rounded fs-6 align-middle me-1">lock_open</span>
+                      Unban
+                    </button>
+                  </form>
+                </td>
+              </tr>
+              {{/each}}
+            </tbody>
+          </table>
+        </div>
+        {{else}}
+        <div class="text-center text-body-secondary py-6">
+          <span class="material-symbols-rounded fs-1 d-block mb-2 opacity-50">block</span>
+          No banned IPs.
+        </div>
+        {{/if}}
+      </div>
+    </div>
+
+  </div>
+</div>
+<!--//Page content End//-->
+
+<!--IP lookup modal — populated by /admin-assets/js/ip-lookup.js-->
+<div class="modal fade" id="ipLookupModal" tabindex="-1" aria-labelledby="ipLookupModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="ipLookupModalLabel">IP Address</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body"></div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
