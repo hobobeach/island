@@ -49,7 +49,7 @@
               {{#each requests}}
               <tr>
                 <td class="ps-3 ps-lg-6 fw-semibold">{{ fullName }}</td>
-                <td>{{ email }}</td>
+                <td><a href="#" class="text-reset text-decoration-underline" data-email="{{ email }}">{{ email }}</a></td>
                 <td><span class="font-monospace small">{{ ip }}</span></td>
                 <td class="small text-body-secondary text-truncate" style="max-width: 220px;" title="{{ userAgent }}">{{ userAgent }}</td>
                 <td class="small text-body-secondary text-truncate" style="max-width: 160px;" title="{{ referer }}">{{ referer }}</td>
@@ -158,3 +158,19 @@
 </div>
 {{/if}}
 {{/each}}
+
+<!--Email lookup modal — populated by /admin-assets/js/email-lookup.js-->
+<div class="modal fade" id="emailLookupModal" tabindex="-1" aria-labelledby="emailLookupModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="emailLookupModalLabel">Email Address</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body"></div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>

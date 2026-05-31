@@ -1,25 +1,31 @@
 {{#if posts}}
-  <ul class="blog-list">
-    {{#each posts}}
-      <li class="blog-card">
-        {{#if this.image}}
-          <a class="blog-card__image" href="/blog/{{this.slug}}">
-            <img src="{{this.image}}" alt="{{this.imageAlt}}">
-          </a>
-        {{/if}}
-        <div class="blog-card__body">
-          <p class="blog-card__meta">
-            <time datetime="{{this.isoDate}}">{{this.displayDate}}</time>
-            <span class="blog-card__sep">&middot;</span>
-            <span>{{this.author}}</span>
-          </p>
-          <h2 class="blog-card__title"><a href="/blog/{{this.slug}}">{{this.title}}</a></h2>
-          <p class="blog-card__description">{{this.description}}</p>
-          <a class="blog-card__more" href="/blog/{{this.slug}}">Read more &rarr;</a>
+  {{#each posts}}
+    <article class="row g-0 mb-4 mb-lg-5 position-relative overflow-hidden hover-lift hover-shadow-lg border rounded-5 card-hover shadow-sm align-items-center">
+      {{#if this.image}}
+        <div class="col-md-6 col-lg-5 p-0">
+          <div class="overflow-hidden">
+            <img src="{{this.image}}" alt="{{this.imageAlt}}" class="img-fluid img-zoom">
+          </div>
         </div>
-      </li>
-    {{/each}}
-  </ul>
+      {{/if}}
+      <div class="{{#if this.image}}col-md-6 col-lg-7{{else}}col-12{{/if}}">
+        <div class="position-relative p-4 p-lg-5">
+          <div class="d-flex justify-content-start w-100 pb-3 align-items-center">
+            <small class="text-body-secondary">
+              <time datetime="{{this.isoDate}}">{{this.displayDate}}</time>
+              <span class="mx-2">&middot;</span>
+              By {{this.author}}
+            </small>
+          </div>
+          <h2 class="mb-3">{{this.title}}</h2>
+          {{#if this.description}}
+            <p class="mb-0 text-body-secondary">{{this.description}}</p>
+          {{/if}}
+        </div>
+      </div>
+      <a href="/blog/{{this.slug}}" class="stretched-link"></a>
+    </article>
+  {{/each}}
 {{else}}
-  <p class="blog-empty">No posts yet. Add one to <code>content/blog/</code>.</p>
+  <p class="text-center text-body-secondary py-5 mb-0">No posts yet.</p>
 {{/if}}

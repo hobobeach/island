@@ -1,4 +1,10 @@
-<link rel="stylesheet" href="/assets/blog.css">
+<link rel="stylesheet" href="/assets/fonts/bootstrap-icons/bootstrap-icons.min.css">
+<link rel="stylesheet" href="/assets/fonts/iconsmind/iconsmind.css">
+<link rel="stylesheet" href="/assets/vendor/aos/aos.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700&family=Source+Serif+4:ital,wght@0,400;0,500;1,400;1,500&display=swap" rel="stylesheet">
+<link href="/assets/css/theme.min.css" rel="stylesheet">
 <meta name="description" content="{{post.description}}">
 <link rel="canonical" href="{{canonical}}">
 <meta property="og:title" content="{{post.title}}">
@@ -7,27 +13,62 @@
 {{#if post.image}}<meta property="og:image" content="{{post.image}}">{{/if}}
 <script type="application/ld+json">{{{jsonLd}}}</script>
 
-<main class="blog-post">
-  <nav class="blog-breadcrumb"><a href="/blog">&larr; {{blogTitle}}</a></nav>
+<header class="z-fixed header-transparent header-absolute-top pt-lg-3">
+  <nav class="navbar navbar-expand-lg navbar-light">
+    <div class="container position-relative">
+      <a class="navbar-brand fw-bold fs-3" href="/">{{ name }}°</a>
 
-  <article>
-    <header class="blog-post__header">
-      <h1>{{post.title}}</h1>
-      <p class="blog-post__meta">
-        <time datetime="{{post.isoDate}}">{{post.displayDate}}</time>
-        <span class="blog-post__sep">&middot;</span>
-        <span>{{post.author}}</span>
-      </p>
-    </header>
-
-    {{#if post.image}}
-      <figure class="blog-post__hero">
-        <img src="{{post.image}}" alt="{{post.imageAlt}}">
-      </figure>
-    {{/if}}
-
-    <div class="blog-post__body">
-      {{{post.body}}}
+      <div class="d-flex align-items-center navbar-no-collapse-items order-lg-last">
+        <div class="nav-item me-2">
+          <a href="/blog" class="btn btn-secondary btn-sm">Blog</a>
+        </div>
+        <div class="nav-item">
+          <a href="/login" class="btn btn-secondary btn-sm">Sign In</a>
+        </div>
+      </div>
     </div>
-  </article>
+  </nav>
+</header>
+
+<main>
+  <section id="article-header" class="position-relative bg-primary-subtle">
+    <div class="container pt-14 pb-9 pb-lg-11 position-relative">
+      <div class="row pt-lg-7">
+        <div class="col-lg-10 col-xl-8">
+          <ol class="breadcrumb mb-3">
+            <li class="breadcrumb-item"><a href="/blog">{{blogTitle}}</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{{post.title}}</li>
+          </ol>
+          <h1 class="my-4 display-4">{{post.title}}</h1>
+          <div class="d-flex pt-2 mb-0 small align-items-center text-body-secondary">
+            <time datetime="{{post.isoDate}}">{{post.displayDate}}</time>
+            <span class="mx-2">&middot;</span>
+            <span>By {{post.author}}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="position-relative border-bottom">
+    <div class="container py-9 py-lg-11">
+      {{#if post.image}}
+        <figure class="mb-7 mb-lg-9">
+          <img src="{{post.image}}" alt="{{post.imageAlt}}" class="img-fluid shadow-lg rounded-4 w-100">
+        </figure>
+      {{/if}}
+      <div class="row">
+        <div class="col-xl-9 mx-auto">
+          <article class="article">
+            {{{post.body}}}
+          </article>
+          <nav class="mt-9">
+            <a href="/blog" class="link-hover-underline">&larr; Back to {{blogTitle}}</a>
+          </nav>
+        </div>
+      </div>
+    </div>
+  </section>
 </main>
+
+<script src="/assets/js/theme.bundle.min.js"></script>

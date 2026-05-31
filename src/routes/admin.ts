@@ -141,6 +141,7 @@ adminRouter.get('/invites', async (
       totalCount: all.length,
       notice: asString(request.query.ok) || undefined,
       error: asString(request.query.error) || undefined,
+      pageScripts: ['/admin-assets/js/email-lookup.js'],
     });
   } catch (error) {
     next(error);
@@ -478,6 +479,54 @@ adminRouter.get('/abuse-lookup', async (
     response.status(upstream.ok ? 200 : upstream.status).json(payload);
   } catch (_error) {
     response.status(502).json({ error: 'Failed to reach abuseipdb.com.' });
+  }
+});
+
+// Loose email sanity check — anything past this won't match in Apollo anyway.
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+// Enrich a single email address via Apollo.io's People Match API. Already
+// behind requireAdmin via the router-wide guard. Returns Apollo's raw
+// `{ person: {...} }` payload on success; the browser (email-lookup.js) renders
+// the fields. Apollo replies with plain text (not JSON) for auth failures, so
+// the body is read as text and only then parsed.
+adminRouter.get('/email-lookup', async (
+  request: Request,
+  response: Response,
+): Promise<void> => {
+  const email = typeof request.query.email === 'string' ? request.query.email.trim() : '';
+  if (!email || !EMAIL_PATTERN.test(email)) {
+    response.status(400).json({ error: 'Missing or invalid email parameter.' });
+    return;
+  }
+
+  const token = process.env.APOLLO_KEY;
+  if (!token) {
+    response.status(500).json({ error: 'Email lookup is not configured.' });
+    return;
+  }
+
+  try {
+    const upstream = await fetch('https://api.apollo.io/api/v1/people/match', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Cache-Control': 'no-cache',
+        Accept: 'application/json',
+        'x-api-key': token,
+      },
+      body: JSON.stringify({ email }),
+    });
+    const raw = await upstream.text();
+    let payload: unknown;
+    try {
+      payload = JSON.parse(raw);
+    } catch {
+      payload = { error: raw.trim() || `Apollo returned ${upstream.status}` };
+    }
+    response.status(upstream.ok ? 200 : upstream.status).json(payload);
+  } catch (_error) {
+    response.status(502).json({ error: 'Failed to reach apollo.io.' });
   }
 });
 

@@ -66,6 +66,10 @@ app.use(helmet({
     directives: {
       'style-src': ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
       'font-src': ["'self'", 'https://fonts.gstatic.com', 'data:'],
+      // Apollo.io serves enrichment profile photos from varying CDNs
+      // (media.licdn.com, S3, etc.) on the admin email-lookup modal, so a host
+      // allowlist isn't reliable — permit any https image (admin-only surface).
+      'img-src': ["'self'", 'data:', 'https:'],
       // Stripe Elements on the custom /pay page: Stripe.js, its card iframe
       // and 3-D Secure frames, and the API calls it makes from the browser.
       'script-src': ["'self'", 'https://js.stripe.com'],

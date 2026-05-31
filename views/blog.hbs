@@ -1,12 +1,52 @@
-<link rel="stylesheet" href="/assets/blog.css">
+<link rel="stylesheet" href="/assets/fonts/bootstrap-icons/bootstrap-icons.min.css">
+<link rel="stylesheet" href="/assets/fonts/iconsmind/iconsmind.css">
+<link rel="stylesheet" href="/assets/vendor/aos/aos.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700&family=Source+Serif+4:ital,wght@0,400;0,500;1,400;1,500&display=swap" rel="stylesheet">
+<link href="/assets/css/theme.min.css" rel="stylesheet">
 <meta name="description" content="{{blogDescription}}">
 
-<main class="blog-page">
-  <header class="blog-header">
-    <h1>{{blogTitle}}</h1>
-    <p class="blog-tagline">{{blogDescription}}</p>
-    <p class="blog-feed-link"><a href="/blog/feed.xml">RSS feed</a></p>
-  </header>
+<header class="z-fixed header-transparent header-absolute-top pt-lg-3">
+  <nav class="navbar navbar-expand-lg navbar-light">
+    <div class="container position-relative">
+      <a class="navbar-brand fw-bold fs-3" href="/">{{ name }}°</a>
 
-  {{> blog/posts posts=posts}}
+      <div class="d-flex align-items-center navbar-no-collapse-items order-lg-last">
+        <div class="nav-item">
+          <a href="/login" class="btn btn-secondary btn-sm">Sign In</a>
+        </div>
+      </div>
+    </div>
+  </nav>
+</header>
+
+<main>
+  <section class="bg-primary-subtle">
+    <div class="container pt-14 pb-9 pb-lg-12">
+      <div class="row pt-lg-7">
+        <div class="col-md-10 col-lg-8">
+          <ol class="breadcrumb mb-3">
+            <li class="breadcrumb-item"><a href="/">Home</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{{blogTitle}}</li>
+          </ol>
+          <h1 class="mb-0 display-4">{{blogTitle}}</h1>
+          {{#if blogDescription}}
+            <p class="lead mt-3 mb-0 text-body-secondary">{{blogDescription}}</p>
+          {{/if}}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="position-relative">
+    <div class="container z-1 position-relative py-9 py-lg-11">
+      {{> blog/posts posts=posts}}
+      <p class="text-end mt-5 mb-0 small text-body-secondary">
+        <a href="/blog/feed.xml" class="link-hover-underline">RSS feed</a>
+      </p>
+    </div>
+  </section>
 </main>
+
+<script src="/assets/js/theme.bundle.min.js"></script>

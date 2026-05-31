@@ -15,6 +15,7 @@ export interface Post {
   author: string;
   tags: string[];
   featured: boolean;
+  published: boolean;
   body: string;
 }
 
@@ -49,6 +50,8 @@ function loadPosts(): Post[] {
         author: data.author || 'Anonymous',
         tags: data.tags || [],
         featured: data.featured || false,
+        // Posts are published unless the frontmatter explicitly opts out.
+        published: data.published !== false,
         body: marked.parse(content) as string,
       });
     } catch (error) {
@@ -65,9 +68,9 @@ function loadPosts(): Post[] {
 const cache: Post[] = loadPosts();
 
 export function getPosts(): Post[] {
-  return cache;
+  return cache.filter(p => p.published);
 }
 
 export function getPost(slug: string): Post | undefined {
-  return cache.find(p => p.slug === slug);
+  return cache.find(p => p.slug === slug && p.published);
 }
