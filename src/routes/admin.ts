@@ -114,11 +114,17 @@ adminRouter.get('/invites', async (
       ...all.filter((invite) => invite.status !== 'pending'),
     ];
 
+    const bannedIpSet = new Set(
+      (await AppDataSource.getRepository(BannedIp).find({ select: { ip: true } }))
+        .map((b) => b.ip),
+    );
+
     const requests = ordered.map((invite) => ({
       id: invite.id,
       fullName: invite.fullName,
       email: invite.email,
-      ip: invite.ip ?? '—',
+      ip: invite.ip,
+      isBanned: invite.ip ? bannedIpSet.has(invite.ip) : false,
       userAgent: invite.userAgent ?? '—',
       referer: invite.referer ?? '—',
       requestedAt: invite.createdAt.toISOString().slice(0, 16).replace('T', ' '),
@@ -141,7 +147,7 @@ adminRouter.get('/invites', async (
       totalCount: all.length,
       notice: asString(request.query.ok) || undefined,
       error: asString(request.query.error) || undefined,
-      pageScripts: ['/admin-assets/js/email-lookup.js'],
+      pageScripts: ['/admin-assets/js/email-lookup.js', '/admin-assets/js/ip-lookup.js'],
     });
   } catch (error) {
     next(error);
@@ -672,11 +678,17 @@ adminRouter.get('/users', async (
       order: { createdAt: 'DESC' },
     });
 
+    const bannedIpSet = new Set(
+      (await AppDataSource.getRepository(BannedIp).find({ select: { ip: true } }))
+        .map((b) => b.ip),
+    );
+
     const users = all.map((user) => ({
       fullName: user.fullName,
       username: user.username,
       email: user.email,
-      ip: user.ip ?? '—',
+      ip: user.ip,
+      isBanned: user.ip ? bannedIpSet.has(user.ip) : false,
       joinedAt: formatJoined(user.createdAt),
       isAdmin: user.isAdmin,
       hasPaid: user.hasPaid,
@@ -696,6 +708,7 @@ adminRouter.get('/users', async (
       totalCount: all.length,
       adminCount: all.filter((user) => user.isAdmin).length,
       paidCount: all.filter((user) => user.hasPaid && !user.isAdmin).length,
+      pageScripts: ['/admin-assets/js/ip-lookup.js'],
     });
   } catch (error) {
     next(error);
