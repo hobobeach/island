@@ -21,7 +21,7 @@ import { PasswordResetToken } from './entities/password-reset-token.entity';
 const databaseSetting = process.env.DATABASE_PATH
     || process.env.DATABASE_NAME
     || 'database.sqlite';
-const databaseFile = path.isAbsolute(databaseSetting)
+export const databaseFile = path.isAbsolute(databaseSetting)
     ? databaseSetting
     : path.resolve(__dirname, '..', databaseSetting);
 

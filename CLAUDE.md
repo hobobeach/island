@@ -74,6 +74,7 @@ npm run dev            # nodemon → ts-node src/server.ts; reloads on src/, vie
 npm run build          # rimraf ./dist && tsc
 npm start              # build + node dist/server.js
 npx tsc --noEmit       # type-check without emitting (no lint or test scripts are configured)
+npm run backup         # snapshot the SQLite DB and upload it to S3 (see scripts/backup-db.ts)
 ```
 
 There is no test framework, linter, or formatter wired up. Nodemon ignores `*.spec.ts` / `*.test.ts` proactively, but no harness will pick them up.
@@ -91,6 +92,7 @@ Optional:
 - `SES_FROM_ADDRESS` + `AWS_REGION` — sender identity and region for invite emails via AWS SES (`src/shared/mailer.ts`). When **either is blank the email is logged to the console instead of sent** — the default in development. AWS credentials come from the standard provider chain (`AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY` env vars or an IAM role).
 - `APP_URL` — base URL used to build the emailed signup link **and** Stripe Checkout success/cancel URLs (default: `config.url`)
 - `STRIPE_SECRET_KEY` — required to create PaymentIntents for the membership fee (`src/shared/stripe.ts`); `getStripe()` throws without it. `STRIPE_PUBLISHABLE_KEY` — required by the browser card form on `/pay`; `GET /pay` throws without it.
+- `S3_BUCKET_BACKUPS` — destination bucket for `npm run backup` (`scripts/backup-db.ts`), which uploads a timestamped SQLite snapshot. The script exits with an error if it's unset. `S3_REGION_BACKUPS` — bucket region (falls back to `AWS_REGION`); credentials come from the standard AWS provider chain.
 
 ## Plugins
 
