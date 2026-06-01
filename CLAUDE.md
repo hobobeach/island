@@ -92,7 +92,8 @@ Optional:
 - `SES_FROM_ADDRESS` + `AWS_REGION` — sender identity and region for invite emails via AWS SES (`src/shared/mailer.ts`). When **either is blank the email is logged to the console instead of sent** — the default in development. AWS credentials come from the standard provider chain (`AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY` env vars or an IAM role).
 - `APP_URL` — base URL used to build the emailed signup link **and** Stripe Checkout success/cancel URLs (default: `config.url`)
 - `STRIPE_SECRET_KEY` — required to create PaymentIntents for the membership fee (`src/shared/stripe.ts`); `getStripe()` throws without it. `STRIPE_PUBLISHABLE_KEY` — required by the browser card form on `/pay`; `GET /pay` throws without it.
-- `S3_BUCKET_BACKUPS` — destination bucket for `npm run backup` (`scripts/backup-db.ts`), which uploads a timestamped SQLite snapshot. The script exits with an error if it's unset. `S3_REGION_BACKUPS` — bucket region (falls back to `AWS_REGION`); credentials come from the standard AWS provider chain.
+- `S3_BUCKET_BACKUPS` — destination bucket for SQLite backups (uploaded as timestamped snapshots). Used both by `npm run backup` (`scripts/backup-db.ts`, a thin CLI wrapper) and by the automatic scheduler. `S3_REGION_BACKUPS` — bucket region (falls back to `AWS_REGION`); credentials come from the standard AWS provider chain. The shared upload logic lives in `src/shared/backup.ts` (`backupDatabaseToS3()`).
+- `BACKUP_CRON_SCHEDULE` — cron expression for **automatic** backups, which run **only in production**: `src/server.ts` calls `startBackupSchedule()` (`src/shared/backup-schedule.ts`), which schedules `backupDatabaseToS3()` via `node-cron` (UTC). Default when blank: every 6 hours (`0 */6 * * *`). The scheduler no-ops outside production, and logs a warning + schedules nothing if `S3_BUCKET_BACKUPS` is unset or the expression is invalid.
 
 ## Plugins
 
