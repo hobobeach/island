@@ -1,93 +1,47 @@
-<style>
-  :root {
-    --sky-top: #1a1033;
-    --sky-mid: #6b2d5c;
-    --sky-low: #d96b3a;
-    --sky-bot: #f3a953;
-    --sun: #ffd27a;
-    --sun-glow: #ff7a3a;
-    --ink: #f8e9c8;
-    --ink-dim: rgba(248, 233, 200, 0.7);
-  }
+<link rel="stylesheet" href="/assets/fonts/bootstrap-icons/bootstrap-icons.min.css">
+<link rel="stylesheet" href="/assets/fonts/iconsmind/iconsmind.css">
+<link rel="stylesheet" href="/assets/vendor/aos/aos.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700&family=Source+Serif+4:ital,wght@0,400;0,500;1,400;1,500&display=swap" rel="stylesheet">
+<link href="/assets/css/theme.min.css" rel="stylesheet">
 
-  * { box-sizing: border-box; }
+<header class="z-fixed header-transparent header-absolute-top pt-lg-3">
+  <nav class="navbar navbar-expand-lg navbar-light">
+    <div class="container position-relative">
+      <a class="navbar-brand fw-bold fs-3" href="/">{{ name }}°</a>
 
-  html, body {
-    margin: 0;
-    min-height: 100vh;
-    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-    color: var(--ink);
-    background: linear-gradient(
-      180deg,
-      var(--sky-top) 0%,
-      var(--sky-mid) 35%,
-      var(--sky-low) 65%,
-      var(--sky-bot) 90%
-    );
-  }
-
-  main {
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 1.25rem;
-    padding: 2rem 1rem;
-    text-align: center;
-  }
-
-  .status {
-    margin: 0;
-    font-size: clamp(5rem, 18vw, 10rem);
-    font-weight: 600;
-    letter-spacing: 0.1em;
-    color: var(--sun);
-    text-shadow: 0 0 24px var(--sun-glow);
-    line-height: 1;
-  }
-
-  h1 {
-    margin: 0;
-    font-size: clamp(1rem, 2.4vw, 1.5rem);
-    font-weight: 600;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-  }
-
-  p.tagline {
-    margin: 0;
-    max-width: 32rem;
-    color: var(--ink-dim);
-    font-size: clamp(0.85rem, 1.6vw, 1rem);
-    line-height: 1.5;
-  }
-
-  a.home {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.65rem 1.1rem;
-    border: 1px solid rgba(248, 233, 200, 0.55);
-    border-radius: 999px;
-    color: var(--ink);
-    text-decoration: none;
-    font-size: 0.9rem;
-    letter-spacing: 0.05em;
-    backdrop-filter: blur(4px);
-    transition: background 120ms ease, border-color 120ms ease, transform 120ms ease;
-  }
-
-  a.home:hover {
-    background: rgba(248, 233, 200, 0.12);
-    border-color: var(--ink);
-    transform: translateY(-1px);
-  }
-</style>
+      <div class="d-flex align-items-center navbar-no-collapse-items order-lg-last">
+        <div class="nav-item">
+          <a href="/" class="btn btn-secondary btn-sm">Back home</a>
+        </div>
+      </div>
+    </div>
+  </nav>
+</header>
 
 <main>
-  <p class="status">{{ status }}</p>
-  <h1>Something went sideways</h1>
-  <p class="tagline">{{ message }}</p>
-  <a class="home" href="/">← Back home</a>
+  <section class="position-relative overflow-hidden">
+    <div class="bg-pattern text-primary text-opacity-50 opacity-25 w-100 h-100 start-0 top-0 position-absolute"></div>
+    <div class="bg-gradientwhite flip-y w-50 h-100 start-50 top-0 translate-middle-x position-absolute"></div>
+    <div class="container min-vh-100 d-flex align-items-center justify-content-center py-9 position-relative z-1">
+      <div class="row w-100">
+        <div class="col-md-10 col-lg-8 mx-auto text-center">
+
+          <div class="text-danger mb-4">
+            <i class="bi bi-exclamation-octagon display-3"></i>
+          </div>
+          <h1 class="display-1 mb-2">{{ status }}</h1>
+          <h2 class="mb-4">Something went sideways</h2>
+          <p class="w-lg-75 lead mx-auto mb-5">{{ message }}</p>
+          <a href="/" class="fw-semibold">
+            <i class="bi bi-arrow-left lh-1 fw-normal me-2"></i>Back to Home
+          </a>
+
+        </div>
+      </div>
+    </div>
+  </section>
 </main>
+
+<script src="/assets/js/theme.bundle.min.js"></script>

@@ -28,6 +28,12 @@ https://www.ft.com/content/12313f08-991d-4079-9631-9ce7ae70c3e3?syn-25a6b1a6=1
 
 The Internet does not to be faker than it already is. People do not need to be dumber than they already are.
 
+Any traffic found to be automated is banned. Any account found to be using AI to generate content is banned.
+
+Most people implicitly believe that the Internet has to be automated. Google rose to promin. They collected a lot of data. They wanted to make money off of it. Hence, "Big Data" and "data mining" became concepts that were foisted upon us.
+
+One assumption I am making is that people want the Internet to be a channel for them to communicate with other people. The business model of the Internet lends itself to AI generated content, 
+
 # Hello, world
 
 This older post exists so you can see the index sort posts in **descending date order**.
