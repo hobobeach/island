@@ -11,6 +11,7 @@
     "invites": "ts-node scripts/invites.ts",
     "create-admin": "ts-node scripts/create-admin.ts",
     "backup": "ts-node scripts/backup-db.ts",
+    "sync-backups": "ts-node scripts/sync-backups.ts",
     "truncate-tables": "ts-node scripts/truncate-tables.ts",
     "normalize-ips": "ts-node scripts/normalize-ips.ts"
   },

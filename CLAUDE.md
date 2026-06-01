@@ -75,6 +75,7 @@ npm run build          # rimraf ./dist && tsc
 npm start              # build + node dist/server.js
 npx tsc --noEmit       # type-check without emitting (no lint or test scripts are configured)
 npm run backup         # snapshot the SQLite DB and upload it to S3 (see scripts/backup-db.ts)
+npm run sync-backups   # download S3 backups missing from the local dir (see scripts/sync-backups.ts)
 ```
 
 There is no test framework, linter, or formatter wired up. Nodemon ignores `*.spec.ts` / `*.test.ts` proactively, but no harness will pick them up.
@@ -94,6 +95,7 @@ Optional:
 - `STRIPE_SECRET_KEY` — required to create PaymentIntents for the membership fee (`src/shared/stripe.ts`); `getStripe()` throws without it. `STRIPE_PUBLISHABLE_KEY` — required by the browser card form on `/pay`; `GET /pay` throws without it.
 - `S3_BUCKET_BACKUPS` — destination bucket for SQLite backups (uploaded as timestamped snapshots). Used both by `npm run backup` (`scripts/backup-db.ts`, a thin CLI wrapper) and by the automatic scheduler. `S3_REGION_BACKUPS` — bucket region (falls back to `AWS_REGION`); credentials come from the standard AWS provider chain. The shared upload logic lives in `src/shared/backup.ts` (`backupDatabaseToS3()`).
 - `BACKUP_CRON_SCHEDULE` — cron expression for **automatic** backups, which run **only in production**: `src/server.ts` calls `startBackupSchedule()` (`src/shared/backup-schedule.ts`), which schedules `backupDatabaseToS3()` via `node-cron` (UTC). Default when blank: every 6 hours (`0 */6 * * *`). The scheduler no-ops outside production, and logs a warning + schedules nothing if `S3_BUCKET_BACKUPS` is unset or the expression is invalid.
+- `BACKUP_LOCAL_DIR` — local destination for `npm run sync-backups` (`scripts/sync-backups.ts`), which downloads every `*.sqlite` object in `S3_BUCKET_BACKUPS` that isn't already present locally (one-way pull; local-only files are left alone). Default when blank: `~/Dropbox/Backups/island`.
 
 ## Plugins
 
