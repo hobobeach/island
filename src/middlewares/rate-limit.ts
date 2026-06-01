@@ -38,6 +38,25 @@ export const loginLimiter = rateLimit({
 });
 
 /**
+ * Forgot-password POST limiter — tight per-IP cap so the endpoint can't be
+ * used to spray reset emails or probe for accounts. Every request counts; on
+ * 429 we re-render the forgot-password form with an error.
+ */
+export const forgotPasswordLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000,
+  limit: 5,
+  standardHeaders: 'draft-7',
+  legacyHeaders: false,
+  handler: (_request, response) => {
+    response.status(429).render('forgot-password', {
+      ...config,
+      title: `Reset your password · ${config.name}`,
+      error: 'Too many reset requests. Please wait a while and try again.',
+    });
+  },
+});
+
+/**
  * Public invite endpoint limiter — tight per-IP cap so the invite_requests
  * table can't be sprayed with fresh emails from one source. Every request
  * counts (a real human submits this once); the response is JSON.

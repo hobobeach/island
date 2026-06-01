@@ -11,6 +11,7 @@ import { Comment } from './entities/comment.entity';
 import { PostUpvote } from './entities/post-upvote.entity';
 import { CommentUpvote } from './entities/comment-upvote.entity';
 import { BannedIp } from './entities/banned-ip.entity';
+import { PasswordResetToken } from './entities/password-reset-token.entity';
 // PLUGINS: data-source-import
 
 // Resolve the SQLite file location. `DATABASE_PATH` (a full path) takes
@@ -38,6 +39,7 @@ export const AppDataSource = new DataSource({
         PostUpvote,
         CommentUpvote,
         BannedIp,
+        PasswordResetToken,
         // PLUGINS: entities
     ],
     logging: true,

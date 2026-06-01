@@ -1,7 +1,7 @@
 import { SESv2Client, SendEmailCommand } from '@aws-sdk/client-sesv2';
 
 import { log, logError } from './log';
-import { inviteEmail } from './email-templates';
+import { inviteEmail, passwordResetEmail } from './email-templates';
 
 let client: SESv2Client | null = null;
 
@@ -59,5 +59,52 @@ export async function sendInviteEmail(
     // Surface the underlying AWS reason so the admin UI can show what failed.
     const detail = error instanceof Error ? `${error.name}: ${error.message}` : String(error);
     throw new Error(`SES could not send the email — ${detail}`);
+  }
+}
+
+/**
+ * Sends the password-reset email via AWS SES.
+ *
+ * Mirrors {@link sendInviteEmail}: when SES isn't configured the email is
+ * logged to the console instead of sent. Errors are swallowed (logged only) so
+ * the caller's response stays uniform and never reveals whether the address
+ * exists.
+ */
+export async function sendPasswordResetEmail(
+  to: string,
+  fullName: string,
+  resetUrl: string,
+): Promise<void> {
+  const { subject, html, text } = passwordResetEmail({ fullName, resetUrl });
+  const from = process.env.SES_FROM_ADDRESS;
+  const region = process.env.AWS_REGION;
+
+  if (!from || !region) {
+    log(
+      `[email:dev] SES not configured — password reset email not sent.\n` +
+        `  To: ${to}\n  Subject: ${subject}\n  Reset link: ${resetUrl}`,
+    );
+    return;
+  }
+
+  const command = new SendEmailCommand({
+    FromEmailAddress: from,
+    Destination: { ToAddresses: [to] },
+    Content: {
+      Simple: {
+        Subject: { Data: subject, Charset: 'UTF-8' },
+        Body: {
+          Html: { Data: html, Charset: 'UTF-8' },
+          Text: { Data: text, Charset: 'UTF-8' },
+        },
+      },
+    },
+  });
+
+  try {
+    await getClient(region).send(command);
+    log(`Password reset email sent to ${to} via SES (${region})`);
+  } catch (error) {
+    logError(error, { method: 'SES', url: 'sendPasswordResetEmail' });
   }
 }

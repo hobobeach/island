@@ -24,10 +24,14 @@ function renderLogin(response: Response, extra: Record<string, unknown> = {}): v
 }
 
 loginRouter.get('/', (request: Request, response: Response): void => {
-  // Shown after completing signup from an emailed invite link.
-  const extra = request.query.registered
-    ? { notice: 'Your account is ready — please sign in.' }
-    : {};
+  // Shown after completing signup from an emailed invite link, or after a
+  // successful password reset.
+  let extra: Record<string, unknown> = {};
+  if (request.query.registered) {
+    extra = { notice: 'Your account is ready — please sign in.' };
+  } else if (request.query.reset) {
+    extra = { notice: 'Your password has been reset — please sign in.' };
+  }
   renderLogin(response, extra);
 });
 
