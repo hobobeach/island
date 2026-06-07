@@ -1,0 +1,44 @@
+<link rel="stylesheet" href="/assets/fonts/bootstrap-icons/bootstrap-icons.min.css">
+<link rel="stylesheet" href="/assets/fonts/iconsmind/iconsmind.css">
+<link rel="stylesheet" href="/assets/vendor/aos/aos.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700&family=Source+Serif+4:ital,wght@0,400;0,500;1,400;1,500&display=swap" rel="stylesheet">
+<link href="/assets/css/theme.min.css" rel="stylesheet">
+
+<header class="z-fixed header-transparent header-absolute-top pt-lg-3">
+  <nav class="navbar navbar-expand-lg navbar-light">
+    <div class="container position-relative">
+      <a class="navbar-brand fw-bold fs-3" href="/">{{ name }}°</a>
+
+      <div class="d-flex align-items-center navbar-no-collapse-items order-lg-last">
+        <div class="nav-item">
+          <a href="/login" class="btn btn-secondary btn-sm">Sign In</a>
+        </div>
+      </div>
+    </div>
+  </nav>
+</header>
+
+<main>
+  <section class="position-relative">
+    <div class="bg-pattern text-primary text-opacity-50 opacity-25 w-100 h-100 start-0 top-0 position-absolute"></div>
+    <div class="bg-gradientwhite flip-y w-50 h-100 start-50 top-0 translate-middle-x position-absolute"></div>
+    <div class="container min-vh-100 d-flex align-items-center justify-content-center py-9 position-relative z-1">
+      <div class="row align-items-center justify-content-center w-100">
+        <div class="col-xl-6 col-lg-7 col-md-9 col-sm-10 z-2 text-center">
+
+          <span class="badge bg-primary-subtle text-primary rounded-pill mb-3">Discussion</span>
+          <h1 class="display-6 mb-3">{{ postTitle }}</h1>
+          <p class="lead text-body-secondary mb-4">
+            Sign in to read the discussion and join the conversation on {{ name }}.
+          </p>
+          <a href="/login" class="btn btn-primary btn-lg">Sign in to view</a>
+
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script src="/assets/js/theme.bundle.min.js"></script>

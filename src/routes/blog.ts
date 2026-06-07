@@ -1,5 +1,6 @@
 import express, { Request, Response, NextFunction, Router } from 'express';
 import { getPosts, getPost, Post } from '../shared/blog-content';
+import { config } from '../shared/config';
 
 export const blogRouter: Router = express.Router();
 
@@ -28,6 +29,7 @@ function escapeXml(s: string): string {
 
 blogRouter.get('/', (request: Request, response: Response): void => {
   response.render('blog', {
+    name: config.name,
     title: blogTitle,
     blogTitle,
     blogDescription,
@@ -95,6 +97,7 @@ blogRouter.get('/:slug', (request: Request, response: Response, next: NextFuncti
   });
 
   response.render('blog-post', {
+    name: config.name,
     title: post.title,
     blogTitle,
     post,

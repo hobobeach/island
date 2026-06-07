@@ -13,6 +13,19 @@
 {{#if post.image}}<meta property="og:image" content="{{post.image}}">{{/if}}
 <script type="application/ld+json">{{{jsonLd}}}</script>
 
+<style>
+  /* Lead-in first paragraph with a drop cap, matching the article template. */
+  .article > p:first-child { font-size: 1.2rem; font-weight: 300; line-height: 1.7; }
+  .article > p:first-child::first-letter {
+    float: left;
+    font-size: 3.1rem;
+    line-height: 1;
+    font-weight: 600;
+    margin: 0.35rem 0.6rem 0 0;
+    color: var(--bs-primary);
+  }
+</style>
+
 <header class="z-fixed header-transparent header-absolute-top pt-lg-3">
   <nav class="navbar navbar-expand-lg navbar-light">
     <div class="container position-relative">
@@ -31,38 +44,73 @@
 </header>
 
 <main>
+  <!--Article header-->
   <section id="article-header" class="position-relative bg-primary-subtle">
     <div class="container pt-14 pb-9 pb-lg-11 position-relative">
-      <div class="row pt-lg-7">
+      <article class="row pt-lg-7 pb-9">
         <div class="col-lg-10 col-xl-8">
-          <ol class="breadcrumb mb-3">
-            <li class="breadcrumb-item"><a href="/blog">{{blogTitle}}</a></li>
-            <li class="breadcrumb-item active" aria-current="page">{{post.title}}</li>
-          </ol>
-          <h1 class="my-4 display-4">{{post.title}}</h1>
-          <div class="d-flex pt-2 mb-0 small align-items-center text-body-secondary">
-            <time datetime="{{post.isoDate}}">{{post.displayDate}}</time>
-            <span class="mx-2">&middot;</span>
-            <span>By {{post.author}}</span>
+          <div class="position-relative pb-3 pb-lg-0">
+            <div class="d-flex align-items-center w-100">
+              {{#each post.tags}}
+              <span class="badge bg-primary rounded-pill me-2">{{ this }}</span>
+              {{/each}}
+              <small class="text-body-secondary">
+                <time datetime="{{post.isoDate}}">{{post.displayDate}}</time>
+              </small>
+            </div>
+            <h1 class="my-4 display-4">{{post.title}}</h1>
+            <div class="d-flex pt-2 mb-0 small align-items-center text-body-secondary">
+              <i class="bi bi-person-circle fs-4 me-2"></i>
+              <span>By <span class="text-body fw-semibold">{{post.author}}</span></span>
+            </div>
           </div>
         </div>
-      </div>
+      </article>
     </div>
+
+    <!--Divider-->
+    <svg class="position-absolute start-0 bottom-0" style="color: var(--bs-body-bg);" preserveAspectRatio="none"
+      width="100%" height="120" viewBox="0 0 800 240" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M800 240H0L800 0V240Z" fill="currentColor" />
+    </svg>
   </section>
+  <!--/.Article header-->
 
   <section class="position-relative border-bottom">
-    <div class="container py-9 py-lg-11">
+    <div class="container pb-9 pb-lg-11">
       {{#if post.image}}
-        <figure class="mb-7 mb-lg-9">
-          <img src="{{post.image}}" alt="{{post.imageAlt}}" class="img-fluid shadow-lg rounded-4 w-100">
-        </figure>
+      <img src="{{post.image}}" alt="{{post.imageAlt}}"
+        class="img-fluid shadow-lg rounded-4 mb-7 mb-lg-9 position-relative mt-n14 w-100">
       {{/if}}
+
       <div class="row">
         <div class="col-xl-9 mx-auto">
-          <article class="article">
+          <article class="article mb-9">
             {{{post.body}}}
           </article>
-          <nav class="mt-9">
+          <!--/.article-->
+
+          <!--Share-->
+          <div class="d-flex justify-content-end align-items-center mb-9">
+            <div class="me-3 small text-body-secondary">Share Article</div>
+            <div>
+              <a href="https://www.facebook.com/sharer/sharer.php?u={{canonical}}" target="_blank" rel="noopener"
+                class="btn btn-sm border text-body hover-lift hover-shadow me-1" aria-label="Share on Facebook">
+                <i class="bi bi-facebook"></i>
+              </a>
+              <a href="https://twitter.com/intent/tweet?url={{canonical}}" target="_blank" rel="noopener"
+                class="btn btn-sm border text-body hover-lift hover-shadow me-1" aria-label="Share on X">
+                <i class="bi bi-twitter-x"></i>
+              </a>
+              <a href="https://www.linkedin.com/sharing/share-offsite/?url={{canonical}}" target="_blank" rel="noopener"
+                class="btn btn-sm border text-body hover-lift hover-shadow" aria-label="Share on LinkedIn">
+                <i class="bi bi-linkedin"></i>
+              </a>
+            </div>
+          </div>
+          <!--/.share-->
+
+          <nav>
             <a href="/blog" class="link-hover-underline">&larr; Back to {{blogTitle}}</a>
           </nav>
         </div>

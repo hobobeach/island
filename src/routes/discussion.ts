@@ -1,4 +1,5 @@
 import express, { NextFunction, Request, Response } from 'express';
+import passport from 'passport';
 import { In } from 'typeorm';
 
 import { config } from '../shared/config';
@@ -14,6 +15,32 @@ import { formatRelative } from '../shared/format-time';
 import { formatBody, extractDomain } from '../shared/format-text';
 
 export const discussionRouter = express.Router();
+
+// Public share/preview handler for `/discussion/item/:id`, registered BEFORE
+// `requireMember` so it also serves logged-out visitors and social-share
+// crawlers. Authenticated members fall through to the full thread handler
+// further down; everyone else gets a lightweight page that carries the post's
+// Open Graph meta tags — so a shared link previews the post instead of the
+// Sign In page — plus a prompt to sign in. Only the post title is exposed
+// publicly; the thread and comments stay behind the login wall.
+discussionRouter.get('/item/:id', (
+  request: Request,
+  response: Response,
+  next: NextFunction,
+): void => {
+  passport.authenticate(
+    'jwt',
+    { session: false },
+    (error: unknown, payload: Express.User | false | null): void => {
+      if (!error && payload && (payload as { id?: number }).id) {
+        next(); // Logged in → fall through to requireMember + the full handler.
+        return;
+      }
+      renderPublicItem(request, response, next);
+    },
+  )(request, response, next);
+});
+
 discussionRouter.use(requireMember);
 discussionRouter.use(attachKarma);
 
@@ -292,6 +319,58 @@ discussionRouter.post('/submit', async (
     next(error);
   }
 });
+
+/**
+ * Renders the public, login-gated preview of a discussion item. Carries the
+ * post's Open Graph meta tags (via the seo-meta partial in the default layout)
+ * so shared links preview the post; the body is just the title + a sign-in
+ * prompt. Used by the pre-`requireMember` handler for logged-out visitors and
+ * social-share crawlers.
+ */
+async function renderPublicItem(
+  request: Request,
+  response: Response,
+  next: NextFunction,
+): Promise<void> {
+  try {
+    const id = Number(request.params.id);
+    if (!Number.isInteger(id)) {
+      response.status(404);
+      response.render('error-404', { ...config, title: 'Not found', status: 404, message: 'Not found' });
+      return;
+    }
+
+    const post = await AppDataSource.getRepository(Post).findOne({
+      where: { id },
+      relations: ['author'],
+    });
+    if (!post) {
+      response.status(404);
+      response.render('error-404', { ...config, title: 'Not found', status: 404, message: 'Not found' });
+      return;
+    }
+
+    const postTitle = post.isDeleted ? '[deleted]' : post.title;
+    const base = process.env.SITE_URL || config.url || '';
+    const canonical = `${base}/discussion/item/${post.id}`;
+    const description = `Sign in to read the discussion on ${config.name}.`;
+
+    response.render('discussion-item-public', {
+      ...config,
+      title: `${postTitle} · Discussion · ${config.name}`,
+      // Consumed by the seo-meta partial (default layout) for share previews.
+      description,
+      canonicalUrl: canonical,
+      ogTitle: postTitle,
+      ogDescription: description,
+      ogImage: config.image,
+      // Visible page content.
+      postTitle,
+    });
+  } catch (error) {
+    next(error);
+  }
+}
 
 /** GET /discussion/item/:id — post detail + comment tree. */
 discussionRouter.get('/item/:id', async (
