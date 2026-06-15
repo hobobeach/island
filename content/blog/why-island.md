@@ -61,10 +61,7 @@ The approach to keeping Island as human-only as possible is multi-faceted. The s
 
 1. Accounts cannot be used by AI or bots (of any type).
 
-2. No AI generated content is allowed. This means currently:
-
-- AI cannot make new discussion posts
-- AI cannot comment
+2. No AI generated content is allowed. Not for posts nor comments.
 
 # Detection
 

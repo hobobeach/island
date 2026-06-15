@@ -13,12 +13,14 @@
     "backup": "ts-node scripts/backup-db.ts",
     "sync-backups": "ts-node scripts/sync-backups.ts",
     "truncate-tables": "ts-node scripts/truncate-tables.ts",
-    "normalize-ips": "ts-node scripts/normalize-ips.ts"
+    "normalize-ips": "ts-node scripts/normalize-ips.ts",
+    "test:e2e": "playwright test"
   },
   "keywords": [],
   "author": "Erik August Johnson <erik@island0.com>",
   "license": "MIT",
   "devDependencies": {
+    "@playwright/test": "^1.61.0",
     "@types/better-sqlite3": "^7.6.13",
     "@types/cookie-parser": "^1.4.8",
     "@types/cors": "^2.8.19",
