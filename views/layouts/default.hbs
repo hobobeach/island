@@ -8,6 +8,11 @@
   <title>{{ title }}</title>
   <!--Set colour mode before render to avoid a flash of the wrong theme-->
   <script src="/assets/js/theme-init.js"></script>
+  <!--Give plain content links the brand colour by default, not only on hover.-->
+  <style>
+    a[href]:not([class]) { color: rgba(var(--bs-link-hover-color-rgb), 1); }
+    a[href]:not([class]):hover { text-decoration: underline; }
+  </style>
   <!-- PLUGIN seo BEGIN -->
   {{> seo-meta}}
   <!-- PLUGIN seo END -->
