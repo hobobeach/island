@@ -60,23 +60,6 @@ blogRouter.get('/feed.xml', (request: Request, response: Response): void => {
   response.send(xml);
 });
 
-blogRouter.get('/sitemap.xml', (request: Request, response: Response): void => {
-  const base = siteUrl();
-  const entries = [
-    `  <url><loc>${base}/blog</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>`,
-    ...getPosts().map((p: Post) =>
-      `  <url><loc>${base}/blog/${p.slug}</loc><lastmod>${p.isoDate}</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>`,
-    ),
-  ].join('\n');
-
-  const xml = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${entries}
-</urlset>`;
-  response.type('application/xml');
-  response.send(xml);
-});
-
 blogRouter.get('/:slug', (request: Request, response: Response, next: NextFunction): void => {
   const post = getPost(request.params.slug);
   if (!post) return next();
